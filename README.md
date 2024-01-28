@@ -73,6 +73,7 @@ v1.0.0
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
+ - [Npcap](https://npcap.com/)
  - [sharppcap](https://github.com/dotpcap/sharppcap)
  - [Packet.Net](https://github.com/dotpcap/packetnet)
 
