@@ -7,4 +7,15 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Octokit" Version="9.1.1" />
+      <PackageReference Include="PacketDotNet" Version="1.4.8-pre18" />
+      <PackageReference Include="SharpPcap" Version="6.2.5" />
+      <PackageReference Include="TouchPortal-CS-API" Version="1.46.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="base\" />
+    </ItemGroup>
+
 </Project>
