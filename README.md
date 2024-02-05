@@ -21,7 +21,8 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
    - Click import plugin
    - Find the plugin file you've just downloaded and open it
 4. Wait a bit till it finish loading
-5. Now start setting up buttons or sliders
+5. Restart Touch Portal
+6. Now start setting up buttons or sliders
 
 ## Plugin Capabilities
 ### Actions
