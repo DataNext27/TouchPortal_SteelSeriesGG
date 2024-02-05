@@ -1,6 +1,6 @@
 {
     "sdk": 6,
-    "version": 4,
+    "version": 5,
     "name": "SteelSeries GG",
     "id": "steelseries-gg",
     "configuration": {
@@ -203,7 +203,7 @@
                             ]
                         },
                         {
-                            "id": "modechoice",
+                            "id": "streamchoice",
                             "type": "choice",
                             "label": "choice",
                             "default": "",
