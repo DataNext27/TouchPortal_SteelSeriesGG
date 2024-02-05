@@ -260,7 +260,7 @@
                 {
                     "id": "tp_steelseries-gg_chatmix_balance",
                     "type": "choice",
-                    "desc": "Balance",
+                    "desc": "ChatMix Balance",
                     "default": "",
                     "parentGroup": "ChatMix",
                     "valueChoices": [ ]
@@ -268,7 +268,7 @@
                 {
                     "id": "tp_steelseries-gg_chatmix_state",
                     "type": "choice",
-                    "desc": "State",
+                    "desc": "ChatMix State",
                     "default": "",
                     "parentGroup": "ChatMix",
                     "valueChoices": [ ]
