@@ -11,7 +11,6 @@ public class SteelSeriesHTTPHandler
     
     private static readonly HttpClient HttpClient = new();
     public static event EventHandler<OnSteelSeriesEventArgs> OnSteelSeriesEvent = delegate{  };
-
     
     public static string GetggEncryptedAddress()
     {
@@ -143,13 +142,8 @@ public class SteelSeriesHTTPHandler
         loopbackDevice.Capture();
 
         Console.WriteLine($"En attente de paquets HTTP sur le port {targetPort} de l'interface de bouclage.");
-        // Console.WriteLine($"En attente de paquets HTTP sur le port {targetPort} de l'interface de bouclage. Appuyez sur une touche pour arrêter...");
-        // Console.ReadKey();
-
-        // Arrêter la capture
-        // loopbackDevice.StopCapture();
     }
-
+    
     static void SteelSeriesEventManager(string path)
     {
         OnSteelSeriesEventArgs args = new OnSteelSeriesEventArgs();
@@ -482,6 +476,17 @@ public class SteelSeriesHTTPHandler
 
 public class OnSteelSeriesEventArgs : EventArgs
 {
+    public override bool Equals(object obj)
+    {
+        if (obj is OnSteelSeriesEventArgs other)
+        {
+            return Setting == other.Setting && Mode == other.Mode && MixDevice == other.MixDevice &&
+                   Value == other.Value && StreamerMode == other.StreamerMode;
+        }
+
+        return false;
+    }
+    
     public string Setting { get; set; }
     public Mode? Mode { get; set; }
     public MixDevices? MixDevice { get; set; }

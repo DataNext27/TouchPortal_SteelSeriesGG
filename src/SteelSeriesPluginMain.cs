@@ -14,8 +14,9 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.0.0";
+    private string version = "1.0.1";
     private string latestReleaseUrl;
+    private OnSteelSeriesEventArgs _lastEventArgs;
     
     string _muteStatesNames;
 
@@ -124,8 +125,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     public void OnSteelSeriesEventHandler(object sender, OnSteelSeriesEventArgs eventArgs)
     {
+        if (eventArgs.Equals(_lastEventArgs))
+        {
+            return;
+        }
+        
+        _lastEventArgs = eventArgs;
+        
         Console.WriteLine("" + eventArgs.Setting + " " + eventArgs.Mode + " " + eventArgs.StreamerMode + " " + eventArgs.MixDevice + " " + eventArgs.Value);
-
+        
         switch (eventArgs.Setting)
         {
             case "mode":
@@ -306,6 +314,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
         
         double vol = volumeValue / 100f;
+
+        if (vol == GetVolume(device, streamMode))
+        {
+            return;
+        }
         
         if (GetMode() == Mode.Classic)
         {

@@ -215,6 +215,11 @@ public class SteelSeriesHttpActionHandler
         {
             return;
         }
+
+        if (balance == GetChatMixBalance())
+        {
+            return;
+        }
         
         HttpPut("chatMix?balance=" + balance.ToString("0.00", CultureInfo.InvariantCulture));
     }
