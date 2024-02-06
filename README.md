@@ -1,6 +1,6 @@
 # SteelSeries GG Plugin for Touch Portal
 This plugin allows you to control to control SteelSeries GG Sonar with Touch Portal<br>
-/!\ This plugin allows you to control Sonar and only Sonar for the moment!
+/!\ This plugin allows you to control Sonar and only Sonar for the moment! (Maybe Moments one day)
 
 - [SteelSeries GG Plugin for Touch Portal](#steelseries-gg-plugin-for-touch-portal)
   - [Installation](#installation) 
