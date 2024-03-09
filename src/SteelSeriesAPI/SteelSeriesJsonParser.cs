@@ -475,4 +475,29 @@ public class SteelSeriesJsonParser
         }
         return new RedirectionDevice("error", "error");
     }
+
+    public static bool GetRedirectionState(StreamerMode streamerMode, MixDevices device)
+    {
+        JsonDocument streamRedirections = JsonDocument.Parse(HttpClient.GetStringAsync(GetSonarWebServerAddress() + "streamRedirections").Result);
+        
+        string tempDevice = device.ToString().ToLower();
+        if (tempDevice == "chat") tempDevice = "chatrender";
+        if (tempDevice == "micro") tempDevice = "chatcapture";
+
+        foreach (var element in streamRedirections.RootElement.EnumerateArray())
+        {
+            if (element.GetProperty("streamRedirectionId").ToString() == streamerMode.ToString().ToLower())
+            {
+                foreach (var redirection in element.GetProperty("status").EnumerateArray())
+                {
+                    if (redirection.GetProperty("role").ToString() == tempDevice)
+                    {
+                        return redirection.GetProperty("isEnabled").GetBoolean();
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

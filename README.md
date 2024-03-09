@@ -1,6 +1,7 @@
 # SteelSeries GG Plugin for Touch Portal
 This plugin allows you to control to control SteelSeries GG Sonar with Touch Portal<br>
-/!\ This plugin allows you to control Sonar and only Sonar for the moment! (Maybe Moments one day)
+/!\ This plugin allows you to control Sonar and only Sonar for the moment! </br>
+/!\ May not be supported on Linux and Mac
 
 - [SteelSeries GG Plugin for Touch Portal](#steelseries-gg-plugin-for-touch-portal)
   - [Installation](#installation) 
@@ -15,7 +16,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
 
 ## Installation
 1. Download and install [Npcap](https://npcap.com/#download) (Used by the plugin to discuss with Sonar)
-2. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/tag/1.0.0) of the plugin 
+2. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin 
 3. Open Touch Portal
    - Click the settings button
    - Click import plugin
@@ -30,6 +31,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
  - Change Streamer mode
  - Mute / Unmute
  - Change Redirections Devices
+ - Enable / Disable Monitoring and Steaming Redirections for Streamer mode
 
 ### Sliders
  - Change Volume
@@ -53,16 +55,34 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
    - Value: Name of the selected redirection device of the chosen virtual device
 - Configs
   - Values: Chosen virtual device selected config
+- Redirections State
+  - Values: Enabled, Disabled
+  - Note: Can be changed in settings
  
 ## Settings
  - Muted States Names
    - Values: text
    - Default: Muted,Unmuted
-   - How To Use: {Muted Text},{Unmuted text} (the "," is required)
+   - How To Use: {Muted Text},{Unmuted Text} (the "," is required)
+   - Note: Just for customize state in button text
+ - Redirection States Names
+   - Values: text
+   - Default: Enabled,Disabled
+   - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
    - Note: Just for customize state in button text
   
 ## ChangeLog
 ```
+v1.1.0
+  - Fixed severals bugs
+  - Added more control for Streamer mode
+    - Enable/Disable Monitoring and Steaming Redirections
+    - New states for the redirections
+    - New settings for the redirections
+v1.0.2
+  - Fixed a bug for streaming mute
+v1.0.1
+  - Fixed error E3081
 v1.0.0
   - Control Volumes
   - Mute virtual devices

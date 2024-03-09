@@ -438,26 +438,88 @@ public class SteelSeriesHTTPHandler
             
             case "streamRedirections":
                 if (subs[2] == "isStreamMonitoringEnabled") break;
-                args.Setting = "devices";
+
                 args.Mode = Mode.Stream;
-                // value = subs[4]
-                if (subs[3]=="deviceId")
+                switch (subs[3])
                 {
-                    switch (subs[2])
-                    {
-                        case "mic":
-                            args.MixDevice = MixDevices.Micro;
-                            args.Value = subs[4];
-                            break;
-                        case "streaming":
-                            args.StreamerMode = StreamerMode.Streaming;
-                            args.Value = subs[4];
-                            break;
-                        case "monitoring":
-                            args.StreamerMode = StreamerMode.Monitoring;
-                            args.Value = subs[4];
-                            break;
-                    }
+                    // value = subs[4]
+                    // streamRedirections/$streamerMode$/deviceId/$device$
+                    case "deviceId":
+                        args.Setting = "devices";
+                        switch (subs[2])
+                        {
+                            case "mic":
+                                args.MixDevice = MixDevices.Micro;
+                                args.Value = subs[4];
+                                break;
+                            case "streaming":
+                                args.StreamerMode = StreamerMode.Streaming;
+                                args.Value = subs[4];
+                                break;
+                            case "monitoring":
+                                args.StreamerMode = StreamerMode.Monitoring;
+                                args.Value = subs[4];
+                                break;
+                        }
+                        break;
+                    case "redirections":
+                        args.Setting = "redirectionState";
+                        switch (subs[2])
+                        {
+                            case "streaming":
+                                args.StreamerMode = StreamerMode.Streaming;
+                                switch (subs[4])
+                                {
+                                    case "game":
+                                        args.MixDevice = MixDevices.Game;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "chatRender":
+                                        args.MixDevice = MixDevices.Chat;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "media":
+                                        args.MixDevice = MixDevices.Media;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "aux":
+                                        args.MixDevice = MixDevices.Aux;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "chatCapture":
+                                        args.MixDevice = MixDevices.Micro;
+                                        args.Value = subs[6];
+                                        break;
+                                }
+                                break;
+                            case "monitoring":
+                                args.StreamerMode = StreamerMode.Monitoring;
+                                switch (subs[4])
+                                {
+                                    case "game":
+                                        args.MixDevice = MixDevices.Game;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "chatRender":
+                                        args.MixDevice = MixDevices.Chat;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "media":
+                                        args.MixDevice = MixDevices.Media;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "aux":
+                                        args.MixDevice = MixDevices.Aux;
+                                        args.Value = subs[6];
+                                        break;
+                                    case "chatCapture":
+                                        args.MixDevice = MixDevices.Micro;
+                                        args.Value = subs[6];
+                                        break;
+                                }
+                                break;
+                        }
+                        break;
                 }
                 break;
         }
@@ -469,6 +531,7 @@ public class SteelSeriesHTTPHandler
         // config                                           Config          
         // chatmix                                          balance         
         // devices      Classic/Stream      MixDevices      Device          #StreamerMode
+        // redirectionState Stream          MixDevices      True/False      StreamerMode
         
         OnSteelSeriesEvent(null, args);
     }

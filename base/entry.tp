@@ -1,6 +1,6 @@
 {
     "sdk": 6,
-    "version": 6,
+    "version": 8,
     "name": "SteelSeries GG",
     "id": "steelseries-gg",
     "configuration": {
@@ -245,6 +245,50 @@
                             "valueChoices": [ ]
                         }
                     ]
+                },
+                {
+                    "id": "tp_steelseries-gg_set_redirections_state",
+                    "name": "Enable/Disable Stream redirections",
+                    "prefix": "SteelSeries GG",
+                    "type": "communicate",
+                    "tryInline": true,
+                    "format": "{$ablechoice$} {$streamermode$} {$mixerchoice$} redirection",
+                    "data": [
+                        {
+                            "id": "ablechoice",
+                            "type" : "choice",
+                            "label" : "choice",
+                            "default": "",
+                            "valueChoices": [
+                                "Toggle",
+                                "Enable",
+                                "Disable"
+                            ]
+                        },
+                        {
+                            "id": "streamermode",
+                            "type": "choice",
+                            "label": "choice",
+                            "default": "",
+                            "valueChoices": [
+                                "Monitoring",
+                                "Stream"
+                            ]
+                        },
+                        {
+                            "id": "mixerchoice",
+                            "type": "choice",
+                            "label": "choice",
+                            "default": "",
+                            "valueChoices": [
+                                "Game",
+                                "Chat",
+                                "Media",
+                                "Aux",
+                                "Micro"
+                            ]
+                        }
+                    ]
                 }
             ],
             "events": [ ],
@@ -280,6 +324,14 @@
         {
             "name": "Muted states names",
             "default": "Muted,Unmuted",
+            "type": "text",
+            "maxLength": 50,
+            "isPassword": false,
+            "readOnly": false
+        },
+        {
+            "name": "Redirection states names",
+            "default": "Enabled,Disabled",
             "type": "text",
             "maxLength": 50,
             "isPassword": false,

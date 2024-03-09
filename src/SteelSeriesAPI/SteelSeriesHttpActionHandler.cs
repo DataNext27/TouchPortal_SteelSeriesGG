@@ -72,22 +72,22 @@ public class SteelSeriesHttpActionHandler
                         switch (device)
                         {
                             case MixDevices.Master:
-                                HttpPut("volumeSettings/streamer/streaming/Master/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/Master/volume/" + vol);
                                 break;
                             case MixDevices.Game:
-                                HttpPut("volumeSettings/streamer/streaming/game/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/game/volume/" + vol);
                                 break;
                             case MixDevices.Chat:
-                                HttpPut("volumeSettings/streamer/streaming/chatRender/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/chatRender/volume/" + vol);
                                 break;
                             case MixDevices.Micro:
-                                HttpPut("volumeSettings/streamer/streaming/chatCapture/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/chatCapture/volume/" + vol);
                                 break;
                             case MixDevices.Media:
-                                HttpPut("volumeSettings/streamer/streaming/media/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/media/volume/" + vol);
                                 break;
                             case MixDevices.Aux:
-                                HttpPut("volumeSettings/streamer/streaming/aux/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/streaming/aux/volume/" + vol);
                                 break;
                         }
                         break;
@@ -95,22 +95,22 @@ public class SteelSeriesHttpActionHandler
                         switch (device)
                         {
                             case MixDevices.Master:
-                                HttpPut("volumeSettings/streamer/monitoring/Master/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/Master/volume/" + vol);
                                 break;
                             case MixDevices.Game:
-                                HttpPut("volumeSettings/streamer/monitoring/game/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/game/volume/" + vol);
                                 break;
                             case MixDevices.Chat:
-                                HttpPut("volumeSettings/streamer/monitoring/chatRender/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/chatRender/volume/" + vol);
                                 break;
                             case MixDevices.Micro:
-                                HttpPut("volumeSettings/streamer/monitoring/chatCapture/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/chatCapture/volume/" + vol);
                                 break;
                             case MixDevices.Media:
-                                HttpPut("volumeSettings/streamer/monitoring/media/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/media/volume/" + vol);
                                 break;
                             case MixDevices.Aux:
-                                HttpPut("volumeSettings/streamer/monitoring/aux/Volume/" + vol);
+                                HttpPut("volumeSettings/streamer/monitoring/aux/volume/" + vol);
                                 break;
                         }
                         break;
@@ -270,6 +270,55 @@ public class SteelSeriesHttpActionHandler
                 break;
             case StreamerMode.Monitoring:
                 HttpPut("streamRedirections/monitoring/deviceId/" + deviceId);
+                break;
+        }
+    }
+
+    public static void SetRedirectionState(bool state, StreamerMode streamerMode, MixDevices mixerChoice)
+    {
+        switch (streamerMode)
+        {
+            case StreamerMode.Streaming:
+                switch (mixerChoice)
+                {
+                    // streamRedirections/streaming/redirections/game/isEnabled/true
+                    case MixDevices.Game:
+                        HttpPut("streamRedirections/streaming/redirections/game/isEnabled/" + state);
+                        break;
+                    case MixDevices.Chat:
+                        HttpPut("streamRedirections/streaming/redirections/chatRender/isEnabled/" + state);
+                        break;
+                    case MixDevices.Media:
+                        HttpPut("streamRedirections/streaming/redirections/media/isEnabled/" + state);
+                        break;
+                    case MixDevices.Aux:
+                        HttpPut("streamRedirections/streaming/redirections/aux/isEnabled/" + state);
+                        break;
+                    case MixDevices.Micro:
+                        HttpPut("streamRedirections/streaming/redirections/chatCapture/isEnabled/" + state);
+                        break;
+                }
+                break;
+            case StreamerMode.Monitoring:
+                switch (mixerChoice)
+                {
+                    // streamRedirections/monitoring/redirections/game/isEnabled/true
+                    case MixDevices.Game:
+                        HttpPut("streamRedirections/monitoring/redirections/game/isEnabled/" + state);
+                        break;
+                    case MixDevices.Chat:
+                        HttpPut("streamRedirections/monitoring/redirections/chatRender/isEnabled/" + state);
+                        break;
+                    case MixDevices.Media:
+                        HttpPut("streamRedirections/monitoring/redirections/media/isEnabled/" + state);
+                        break;
+                    case MixDevices.Aux:
+                        HttpPut("streamRedirections/monitoring/redirections/aux/isEnabled/" + state);
+                        break;
+                    case MixDevices.Micro:
+                        HttpPut("streamRedirections/monitoring/redirections/chatCapture/isEnabled/" + state);
+                        break;
+                }
                 break;
         }
     }

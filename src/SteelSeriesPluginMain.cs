@@ -14,11 +14,12 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.0.2";
+    private string version = "1.1.0";
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     
     string _muteStatesNames;
+    string _redirectionStatesNames;
 
     public string PluginId => "steelseries-gg";
 
@@ -80,6 +81,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             {
                 _client.RemoveState($"tp_steelseries-gg_configs_{device}");
                 _client.RemoveState($"tp_steelseries-gg_redirection_device_{device}");
+                _client.RemoveState($"tp_steelseries-gg_monitoring_redirection_state_{device}");
+                _client.RemoveState($"tp_steelseries-gg_streaming_redirection_state_{device}");
             }
         }
         
@@ -92,6 +95,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             {
                 _client.CreateState($"tp_steelseries-gg_configs_{device}", $"{device}", "", "Configs");
                 _client.CreateState($"tp_steelseries-gg_redirection_device_{device}", $"{device}", "", "Redirections Devices");
+                _client.CreateState($"tp_steelseries-gg_monitoring_redirection_state_{device}", $"{device}", "", "Monitoring Redirections State");
+                _client.CreateState($"tp_steelseries-gg_streaming_redirection_state_{device}", $"{device}", "", "Streaming Redirections State");
             }
         }
         
@@ -111,6 +116,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 {
                     _client.StateUpdate($"tp_steelseries-gg_configs_{device}", GetSelectedAudioConfiguration(Enum.Parse<MixDevices>(device)).Name);
                     _client.StateUpdate($"tp_steelseries-gg_redirection_device_{device}", GetSelectedRedirectionDevice(Enum.Parse<MixDevices>(device), Enum.Parse<StreamerMode>(mode)).Name);
+                    _client.StateUpdate($"tp_steelseries-gg_monitoring_redirection_state_{device}", GetStringRedirectionState(StreamerMode.Monitoring, device));
+                    _client.StateUpdate($"tp_steelseries-gg_streaming_redirection_state_{device}", GetStringRedirectionState(StreamerMode.Streaming, device));
                 }
             }
         }
@@ -121,6 +128,13 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         var state = GetMuted(Enum.Parse<MixDevices>(virtualDevice), Enum.Parse<StreamerMode>(streamerMode)).ToString();
         
         return BooleanToMuteState(state);
+    }
+
+    public string GetStringRedirectionState(StreamerMode streamerMode, string virtualDevice)
+    {
+        var state = GetRedirectionState(streamerMode, Enum.Parse<MixDevices>(virtualDevice)).ToString();
+
+        return BooleanToRedirectionState(state);
     }
 
     public void OnSteelSeriesEventHandler(object sender, OnSteelSeriesEventArgs eventArgs)
@@ -138,6 +152,37 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             case "mode":
                 _client.StateUpdate("tp_steelseries-gg_mode", ((Mode)Enum.Parse(typeof(Mode), eventArgs.Value, true)).ToString());
+                
+                foreach (var v_device in Enum.GetNames(typeof(MixDevices)))
+                {
+                    switch (eventArgs.Value)
+                    {
+                        case "classic":
+                            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|mixerchoice={v_device}", (int)(GetVolume(Enum.Parse<MixDevices>(v_device)) * 100));
+                            break;
+                        case "stream":
+                            foreach (var mode in Enum.GetNames(typeof(StreamerMode)))
+                            {
+                                if (mode == "None") continue;
+                        
+                                var tempMode = mode;
+                                if (mode == "Streaming") tempMode = "Stream";
+                                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|streamermode={tempMode}|mixerchoice={v_device}", (int)(GetVolume(Enum.Parse<MixDevices>(v_device), Enum.Parse<StreamerMode>(mode)) * 100));
+                            }
+                            break;
+                    }
+                    
+                    foreach (var mode in Enum.GetNames(typeof(StreamerMode)))
+                    {
+                        _client.StateUpdate($"tp_steelseries-gg_volume_{v_device}", ((int)(GetVolume(Enum.Parse<MixDevices>(v_device), Enum.Parse<StreamerMode>(mode)) * 100)).ToString());
+                        _client.StateUpdate($"tp_steelseries-gg_mute_state_{v_device}", GetMutedState(v_device, mode));
+                        if (v_device != "Master")
+                        {
+                            _client.StateUpdate($"tp_steelseries-gg_redirection_device_{v_device}", GetSelectedRedirectionDevice(Enum.Parse<MixDevices>(v_device), Enum.Parse<StreamerMode>(mode)).Name);
+                        }
+                    }
+                }
+                
                 break;
             case "volume":
                 _client.StateUpdate($"tp_steelseries-gg_volume_{eventArgs.MixDevice}",((int)(float.Parse(eventArgs.Value, CultureInfo.InvariantCulture.NumberFormat) * 100)).ToString());
@@ -148,11 +193,18 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                             (int)(float.Parse(eventArgs.Value, CultureInfo.InvariantCulture.NumberFormat) * 100));
                         break;
                     case Mode.Stream:
-                        string? streamerMode = eventArgs.StreamerMode.ToString();
-                        if (eventArgs.StreamerMode == StreamerMode.Streaming) streamerMode = "Stream";
-                        _client.ConnectorUpdate(
-                            $"tp_steelseries-gg_stream_set_volume|streamermode={streamerMode}|mixerchoice={eventArgs.MixDevice}",
-                            (int)(float.Parse(eventArgs.Value, CultureInfo.InvariantCulture.NumberFormat) * 100));
+                        if (eventArgs.StreamerMode == StreamerMode.Monitoring)
+                        {
+                            _client.ConnectorUpdate(
+                                $"tp_steelseries-gg_stream_set_volume|streamermode=Monitoring|mixerchoice={eventArgs.MixDevice}",
+                                (int)(float.Parse(eventArgs.Value, CultureInfo.InvariantCulture.NumberFormat) * 100));
+                        }
+                        else if(eventArgs.StreamerMode == StreamerMode.Streaming)
+                        {
+                            _client.ConnectorUpdate(
+                                $"tp_steelseries-gg_stream_set_volume|streamermode=Stream|mixerchoice={eventArgs.MixDevice}",
+                                (int)(float.Parse(eventArgs.Value, CultureInfo.InvariantCulture.NumberFormat) * 100));
+                        }
                         break;
                 }
                 break;
@@ -179,6 +231,17 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 string id = eventArgs.Value.Replace("%7B", "{").Replace("%7D", "}");
                 _client.StateUpdate($"tp_steelseries-gg_redirection_device_{eventArgs.MixDevice}", GetRedirectionDeviceFromId(id).Name);
                 break;
+            case "redirectionState":
+                switch (eventArgs.StreamerMode)
+                {
+                    case StreamerMode.Streaming:
+                        _client.StateUpdate($"tp_steelseries-gg_streaming_redirection_state_{eventArgs.MixDevice}", BooleanToRedirectionState(eventArgs.Value));
+                        break;
+                    case StreamerMode.Monitoring:
+                        _client.StateUpdate($"tp_steelseries-gg_monitoring_redirection_state_{eventArgs.MixDevice}", BooleanToRedirectionState(eventArgs.Value));
+                        break;
+                }
+                break;
         }
     }
 
@@ -189,6 +252,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             return _muteStatesNames.Split(",")[0];
         }
         return _muteStatesNames.Split(",")[1];
+    }
+
+    public string BooleanToRedirectionState(string state)
+    {
+        if (state.ToLower() == "true")
+        {
+            return _redirectionStatesNames.Split(",")[0];
+        }
+        return _redirectionStatesNames.Split(",")[1];
     }
     
     
@@ -238,7 +310,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             case "tp_steelseries-gg_set_stream_muted_state":
                 data1 = message["mutechoice"];
                 data2 = message["mixerchoice"];
-                data3 = message["modechoice"];
+                data3 = message["streamchoice"];
                 
                 MuteStateManager(data1, data2, data3);
                 break;
@@ -253,6 +325,13 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 data2 = message["rdevicechoice"];
                 
                 SetRedirectionDeviceManager(data1, data2);
+                break;
+            case "tp_steelseries-gg_set_redirections_state":
+                data1 = message["ablechoice"];
+                data2 = message["streamermode"];
+                data3 = message["mixerchoice"];
+
+                RedirectionStateManager(data1, data2, data3);
                 break;
         }
     }
@@ -368,6 +447,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             {
                 if (GetMuted(device, streamMode) == true)
                 {
+                    Console.WriteLine("true");
                     SetMuted(device, false, streamMode);
                 }
                 else
@@ -447,6 +527,46 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             SetRedirectionDevice(tempDevice, deviceId);
         }
     }
+    
+    public void RedirectionStateManager(string newState, string streamerMode, string mixerChoice)
+    {
+        StreamerMode streamMode = StreamerMode.None;
+        switch (streamerMode)
+        {
+            case "Monitoring": streamMode = StreamerMode.Monitoring; break;
+            case "Stream": streamMode = StreamerMode.Streaming; break;
+        }
+        
+        MixDevices device = MixDevices.Master;
+        switch (mixerChoice)
+        {
+            case "Game": device = MixDevices.Game; break;
+            case "Chat": device = MixDevices.Chat; break;
+            case "Media": device = MixDevices.Media; break;
+            case "Aux": device = MixDevices.Aux; break;
+            case "Micro": device = MixDevices.Micro; break;
+        }
+        
+        if (newState == "Toggle")
+        {
+            if (GetRedirectionState(streamMode, device) == true)
+            {
+                SetRedirectionState(false, streamMode, device);
+            }
+            else
+            {
+                SetRedirectionState(true, streamMode, device);
+            }
+        }
+        else if (newState == "Enable")
+        {
+            SetRedirectionState(true, streamMode, device);
+        }
+        else if (newState == "Disable")
+        {
+            SetRedirectionState(false, streamMode, device);
+        }
+    }
 
     public string[] GetConfigManager(MixDevices device)
     {
@@ -482,6 +602,10 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             {
                 _muteStatesNames = settings.Value;
             }
+            if (settings.Name == "Redirection states names")
+            {
+                _redirectionStatesNames = settings.Value;
+            }
         }
     }
     
@@ -492,6 +616,10 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             if (settings.Name == "Muted states names")
             {
                 _muteStatesNames = settings.Value;
+            }
+            if (settings.Name == "Redirection states names")
+            {
+                _redirectionStatesNames = settings.Value;
             }
         }
     }
