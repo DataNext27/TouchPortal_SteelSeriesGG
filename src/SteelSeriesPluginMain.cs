@@ -251,7 +251,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                         break;
                 }
                 break;
-            case "SteamMonitoring":
+            case "audienceMonitoring":
                 _client.StateUpdate("tp_steelseries-gg_audience_monitoring_state", BooleanToAudienceMonitoringState(eventArgs.Value));
                 break;
         }
@@ -356,8 +356,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 break;
             case "tp_steelseries-gg_set_audience_monitoring_state":
                 data1 = message["ablechoice"];
-
-                PublicHearingManager(data1);
+            
+                AudioMonitoringStateManager(data1);
                 break;
         }
     }
@@ -594,7 +594,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
     }
 
-    public void PublicHearingManager(string newState)
+    public void AudioMonitoringStateManager(string newState)
     {
         if (newState == "Toggle")
         {

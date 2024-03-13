@@ -435,12 +435,14 @@ public class SteelSeriesHTTPHandler
                     }
                 }
                 break;
+            
             case "streamRedirections":
                 args.Mode = Mode.Stream;
+                //if (subs[2] == "isStreamMonitoringEnabled") break;
                 // /streamRedirections/isStreamMonitoringEnabled/false
                 if (subs[2] == "isStreamMonitoringEnabled")
                 {
-                    args.Setting = "StreamMonitoring";
+                    args.Setting = "audienceMonitoring";
                     args.Value = subs[3];
                     break;
                 }
@@ -537,7 +539,7 @@ public class SteelSeriesHTTPHandler
         // chatmix                                          balance         
         // devices      Classic/Stream      MixDevices      Device          #StreamerMode
         // redirectionState Stream          MixDevices      True/False      StreamerMode
-        // SteamMonitoring Stream                           True/False
+        // audienceMonitoring Stream                           True/False
         
         OnSteelSeriesEvent(null, args);
     }
