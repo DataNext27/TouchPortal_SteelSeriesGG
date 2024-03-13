@@ -481,8 +481,8 @@ public class SteelSeriesJsonParser
         JsonDocument streamRedirections = JsonDocument.Parse(HttpClient.GetStringAsync(GetSonarWebServerAddress() + "streamRedirections").Result);
         
         string tempDevice = device.ToString().ToLower();
-        if (tempDevice == "chat") tempDevice = "chatrender";
-        if (tempDevice == "micro") tempDevice = "chatcapture";
+        if (tempDevice == "chat") tempDevice = "chatRender";
+        if (tempDevice == "micro") tempDevice = "chatCapture";
 
         foreach (var element in streamRedirections.RootElement.EnumerateArray())
         {
@@ -499,5 +499,13 @@ public class SteelSeriesJsonParser
         }
 
         return false;
+    }
+    
+    public static bool GetAudienceMonitoringState()
+    {
+        JsonDocument streamMonitoring = JsonDocument.Parse(HttpClient.GetStringAsync(GetSonarWebServerAddress() + "streamRedirections/isStreamMonitoringEnabled").Result);
+
+        var a = streamMonitoring.RootElement.GetBoolean();
+        return a;
     }
 }

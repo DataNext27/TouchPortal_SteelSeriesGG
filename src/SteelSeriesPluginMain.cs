@@ -14,12 +14,13 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.1.0";
+    private string version = "1.1.1";
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     
     string _muteStatesNames;
     string _redirectionStatesNames;
+    string _audienceMonitoringStatesNames;
 
     public string PluginId => "steelseries-gg";
 
@@ -104,6 +105,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.StateUpdate("tp_steelseries-gg_mode", GetMode().ToString());
         _client.StateUpdate("tp_steelseries-gg_chatmix_balance", GetChatMixBalance().ToString());
         _client.StateUpdate("tp_steelseries-gg_chatmix_state", GetChatMixState());
+        _client.StateUpdate("tp_steelseries-gg_audience_monitoring_state", GetStringAudienceMonitoringState());
 
         
         foreach (var device in virtualDevices)
@@ -137,6 +139,13 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         return BooleanToRedirectionState(state);
     }
 
+    public string GetStringAudienceMonitoringState()
+    {
+        var state = GetAudienceMonitoringState().ToString();
+
+        return BooleanToAudienceMonitoringState(state);
+    }
+
     public void OnSteelSeriesEventHandler(object sender, OnSteelSeriesEventArgs eventArgs)
     {
         if (eventArgs.Equals(_lastEventArgs))
@@ -146,7 +155,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         
         _lastEventArgs = eventArgs;
         
-        Console.WriteLine("" + eventArgs.Setting + " " + eventArgs.Mode + " " + eventArgs.StreamerMode + " " + eventArgs.MixDevice + " " + eventArgs.Value);
+        // Console.WriteLine("" + eventArgs.Setting + " " + eventArgs.Mode + " " + eventArgs.StreamerMode + " " + eventArgs.MixDevice + " " + eventArgs.Value);
         
         switch (eventArgs.Setting)
         {
@@ -242,6 +251,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                         break;
                 }
                 break;
+            case "SteamMonitoring":
+                _client.StateUpdate("tp_steelseries-gg_audience_monitoring_state", BooleanToAudienceMonitoringState(eventArgs.Value));
+                break;
         }
     }
 
@@ -261,6 +273,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             return _redirectionStatesNames.Split(",")[0];
         }
         return _redirectionStatesNames.Split(",")[1];
+    }
+
+    public string BooleanToAudienceMonitoringState(string state)
+    {
+        if (state.ToLower() == "true")
+        {
+            return _audienceMonitoringStatesNames.Split(",")[0];
+        }
+        return _audienceMonitoringStatesNames.Split(",")[1];
     }
     
     
@@ -332,6 +353,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 data3 = message["mixerchoice"];
 
                 RedirectionStateManager(data1, data2, data3);
+                break;
+            case "tp_steelseries-gg_set_audience_monitoring_state":
+                data1 = message["ablechoice"];
+
+                PublicHearingManager(data1);
                 break;
         }
     }
@@ -568,6 +594,29 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
     }
 
+    public void PublicHearingManager(string newState)
+    {
+        if (newState == "Toggle")
+        {
+            if (GetAudienceMonitoringState() == true)
+            {
+                SetAudienceMonitoringState(false);
+            }
+            else
+            {
+                SetAudienceMonitoringState(true);
+            }
+        }
+        else if (newState == "Enable")
+        {
+            SetAudienceMonitoringState(true);
+        }
+        else if (newState == "Disable")
+        {
+            SetAudienceMonitoringState(false);
+        }
+    }
+
     public string[] GetConfigManager(MixDevices device)
     {
         List<string> listConfig = new();
@@ -600,11 +649,18 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             if (settings.Name == "Muted states names")
             {
-                _muteStatesNames = settings.Value;
+                if (string.IsNullOrEmpty(settings.Value)) { _muteStatesNames = "Muted,Unmuted"; }
+                else {_muteStatesNames = settings.Value;}
             }
             if (settings.Name == "Redirection states names")
             {
-                _redirectionStatesNames = settings.Value;
+                if (string.IsNullOrEmpty(settings.Value)) { _redirectionStatesNames = "Enabled,Disabled"; }
+                else {_redirectionStatesNames = settings.Value;}
+            }
+            if (settings.Name == "Audience Monitoring states names")
+            {
+                if (string.IsNullOrEmpty(settings.Value)) { _audienceMonitoringStatesNames = "Enabled,Disabled"; }
+                else {_audienceMonitoringStatesNames = settings.Value;}
             }
         }
     }
@@ -615,11 +671,18 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             if (settings.Name == "Muted states names")
             {
-                _muteStatesNames = settings.Value;
+                if (string.IsNullOrEmpty(settings.Value)) { _muteStatesNames = "Muted,Unmuted"; }
+                else {_muteStatesNames = settings.Value;}
             }
             if (settings.Name == "Redirection states names")
             {
-                _redirectionStatesNames = settings.Value;
+                if (string.IsNullOrEmpty(settings.Value)) { _redirectionStatesNames = "Enabled,Disabled"; }
+                else {_redirectionStatesNames = settings.Value;}
+            }
+            if (settings.Name == "Audience Monitoring states names")
+            {
+                if (string.IsNullOrEmpty(settings.Value)) { _audienceMonitoringStatesNames = "Enabled,Disabled"; }
+                else {_audienceMonitoringStatesNames = settings.Value;}
             }
         }
     }

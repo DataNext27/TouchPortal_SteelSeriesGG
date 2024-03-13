@@ -322,4 +322,11 @@ public class SteelSeriesHttpActionHandler
                 break;
         }
     }
+
+    public static void SetAudienceMonitoringState(bool state)
+    {
+        if (GetMode() != Mode.Stream) return;
+        
+        HttpPut("streamRedirections/isStreamMonitoringEnabled/" + state);
+    }
 }
