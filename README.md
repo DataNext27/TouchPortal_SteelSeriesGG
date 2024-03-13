@@ -1,4 +1,5 @@
 # SteelSeries GG Plugin for Touch Portal
+![](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total) <a href='https://ko-fi.com/M4M2VL6WW' target='_blank'><img height='20' style='border:0px;height:20px;' src='https://storage.ko-fi.com/cdn/brandasset/kofi_button_dark.png' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> </br> 
 This plugin allows you to control to control SteelSeries GG Sonar with Touch Portal<br>
 /!\ This plugin allows you to control Sonar and only Sonar for the moment! </br>
 /!\ May not be supported on Linux and Mac
