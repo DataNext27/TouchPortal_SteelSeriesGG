@@ -389,9 +389,17 @@ public class SteelSeriesHTTPHandler
             
             // case Configs
             case "configs":
-                args.Setting = "config";
-                args.Value = subs[2];
-                break;
+                if (subs.Length < 3)
+                {
+                    Console.WriteLine("This could be a bug or an error but it seems i handled it (config)");
+                    break;
+                }
+                else
+                {
+                    args.Setting = "config";
+                    args.Value = subs[2];
+                    break;
+                }
             
             // case chatmix
             default:
@@ -403,7 +411,7 @@ public class SteelSeriesHTTPHandler
                 }
                 else
                 {
-                    Console.WriteLine("This could be a bug or an error but it seems i handled it");
+                    Console.WriteLine("This could be a bug or an error but it seems i handled it (other)");
                 }
                 break;
             
