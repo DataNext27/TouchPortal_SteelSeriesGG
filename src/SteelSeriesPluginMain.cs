@@ -14,7 +14,7 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.1.1";
+    private string version = "1.1.2";
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     

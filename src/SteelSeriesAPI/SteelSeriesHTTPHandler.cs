@@ -115,8 +115,8 @@ public class SteelSeriesHTTPHandler
                 {
                     if (tcpPacket.DestinationPort == targetPort || tcpPacket.SourcePort == targetPort)
                     {
-                        var httpData = Encoding.UTF8.GetString(tcpPacket.PayloadData);
-                        var putData = httpData.Split("\n");
+                        string httpData = Encoding.UTF8.GetString(tcpPacket.PayloadData);
+                        List<string> putData = new List<string>(httpData.Split("\n"));
                         foreach (var line in putData)
                         {
                             if (line.Contains("PUT"))
@@ -149,7 +149,7 @@ public class SteelSeriesHTTPHandler
         OnSteelSeriesEventArgs args = new OnSteelSeriesEventArgs();
         string[] subs = path.Split("/");
 
-        if (subs.Length > 2 && subs[2] == "isStreamMonitoringEnabled") return;
+        if (subs.Length < 2) return;
         
         switch (subs[1])
         {
@@ -400,6 +400,10 @@ public class SteelSeriesHTTPHandler
                     args.Setting = "chatmix";
                     args.Value = subs[1].Split("=")[1];
                     //value = subs[1].Split("=")[1]
+                }
+                else
+                {
+                    Console.WriteLine("This could be a bug or an error but it seems i handled it");
                 }
                 break;
             
