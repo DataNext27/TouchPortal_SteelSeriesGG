@@ -34,6 +34,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
  - Mute / Unmute
  - Change Redirections Devices
  - Enable / Disable Monitoring and Steaming Redirections for Streamer mode
+ - Enable / Disable listening to what your audience hears for Streamer mode
 
 ### Sliders
  - Change Volume
@@ -60,6 +61,9 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
 - Redirections State
   - Values: Enabled, Disabled
   - Note: Can be changed in settings
+- Audience Monitoring State
+  - Values: Enabled, Disabled
+  - Note: Can be changed in settings
  
 ## Settings
  - Muted States Names
@@ -72,9 +76,21 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
    - Default: Enabled,Disabled
    - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
    - Note: Just for customize state in button text
+ - Audience Monitoring States Names
+   - Values: text
+   - Default: Enabled,Disabled
+   - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
+   - Note: Just for customize state in button text
   
 ## ChangeLog
 ```
+v1.1.2
+  - Fixed bugs causing plugin to crashs
+v1.1.1
+  - Fixed some bugs
+  - Added a toggle button for the Streamer mode to listen what your audience hears
+  - Added states for Audience Monitoring
+  - Added settings for Audience Monitoring
 v1.1.0
   - Fixed severals bugs
   - Added more control for Streamer mode
