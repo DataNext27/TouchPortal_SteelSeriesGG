@@ -18,9 +18,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     
-    string _muteStatesNames;
-    string _redirectionStatesNames;
-    string _audienceMonitoringStatesNames;
+    string _muteStatesNames = "Muted,Unmuted";
+    string _redirectionStatesNames = "Enabled,Disabled";
+    string _audienceMonitoringStatesNames = "Enabled,Disabled";
 
     public string PluginId => "steelseries-gg";
 
@@ -261,6 +261,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
+            Console.WriteLine("If any error happened, the condition in BooleanToMuteState() worked");
             return _muteStatesNames.Split(",")[0];
         }
         return _muteStatesNames.Split(",")[1];
@@ -270,6 +271,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
+            Console.WriteLine("If any error happened, the condition in BooleanToRedirectionState() worked");
             return _redirectionStatesNames.Split(",")[0];
         }
         return _redirectionStatesNames.Split(",")[1];
@@ -279,6 +281,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
+            Console.WriteLine("If any error happened, the condition in BooleanToAudienceMonitoringState() worked");
             return _audienceMonitoringStatesNames.Split(",")[0];
         }
         return _audienceMonitoringStatesNames.Split(",")[1];
@@ -473,7 +476,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             {
                 if (GetMuted(device, streamMode) == true)
                 {
-                    Console.WriteLine("true");
                     SetMuted(device, false, streamMode);
                 }
                 else
