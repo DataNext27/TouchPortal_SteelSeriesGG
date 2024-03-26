@@ -107,10 +107,15 @@ public class SteelSeriesHTTPHandler
         // Ouvrir l'interface de bouclage pour la capture
         loopbackDevice.OnPacketArrival += (object s, PacketCapture e) =>
         {
-            var rawPacket = e.GetPacket();
-            if (rawPacket.Data.Length <= 0)
+            RawCapture rawPacket;
+            try
             {
-                return;
+                rawPacket = e.GetPacket();
+            }
+            catch (ArgumentException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
             }
             
             Packet packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
