@@ -12,6 +12,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
     - [States](#states)
   - [Settings](#settings)
   - [Changelog](#changelog)
+  - [FAQs](#faqs)
   - [Dependencies](#dependencies)
   - [Authors](#authors)
 
@@ -34,6 +35,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
  - Mute / Unmute
  - Change Redirections Devices
  - Enable / Disable Monitoring and Steaming Redirections for Streamer mode
+ - Enable / Disable listening to what your audience hears for Streamer mode
 
 ### Sliders
  - Change Volume
@@ -60,6 +62,9 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
 - Redirections State
   - Values: Enabled, Disabled
   - Note: Can be changed in settings
+- Audience Monitoring State
+  - Values: Enabled, Disabled
+  - Note: Can be changed in settings
  
 ## Settings
  - Muted States Names
@@ -72,9 +77,21 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
    - Default: Enabled,Disabled
    - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
    - Note: Just for customize state in button text
+ - Audience Monitoring States Names
+   - Values: text
+   - Default: Enabled,Disabled
+   - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
+   - Note: Just for customize state in button text
   
 ## ChangeLog
 ```
+v1.1.2
+  - Fixed bugs causing plugin to crashs
+v1.1.1
+  - Fixed some bugs
+  - Added a toggle button for the Streamer mode to listen what your audience hears
+  - Added states for Audience Monitoring
+  - Added settings for Audience Monitoring
 v1.1.0
   - Fixed severals bugs
   - Added more control for Streamer mode
@@ -93,6 +110,18 @@ v1.0.0
   - Change redirections devices
   - Change Mode
 ```
+
+## FAQs
+- **What is Npcap and why using it?**</br>
+  Npcap is a driver which listen to http packets on your PC.</br>
+  Using it allow to update Touch Portal sliders when moving a slider on Sonar.
+
+- **Why the sliders on Sonar seems to not update when I'm in Streamer Mode?**</br>
+  This is a Sonar graphical bug. You should be able to use the plugin like it is intended.
+
+- **I got an error, what should I do?**</br>
+  You can try restarting the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
+  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can activate at the bottom of the log list in Touch Portal)
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
