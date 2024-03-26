@@ -1,6 +1,6 @@
 {
     "sdk": 6,
-    "version": 11,
+    "version": 12,
     "name": "SteelSeries GG",
     "id": "steelseries-gg",
     "configuration": {
@@ -87,7 +87,7 @@
                             "id": "mixerchoice",
                             "type": "choice",
                             "label": "choice",
-                            "default": "Game",
+                            "default": "",
                             "valueChoices": [
                                 "Game",
                                 "Chat",

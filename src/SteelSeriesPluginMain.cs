@@ -14,7 +14,7 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.1.2";
+    private string version = "1.1.3";
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     
@@ -90,14 +90,14 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             //Create States
         foreach (var device in virtualDevices) 
         {
-            _client.CreateState($"tp_steelseries-gg_volume_{device}", $"{device}", "", "Volume");
-            _client.CreateState($"tp_steelseries-gg_mute_state_{device}", $"{device}", "", "Mute state");
+            _client.CreateState($"tp_steelseries-gg_volume_{device}", $"Volume - {device}", "", "Volume");
+            _client.CreateState($"tp_steelseries-gg_mute_state_{device}", $"Mute State - {device}", "", "Mute States");
             if (device != "Master")
             {
-                _client.CreateState($"tp_steelseries-gg_configs_{device}", $"{device}", "", "Configs");
-                _client.CreateState($"tp_steelseries-gg_redirection_device_{device}", $"{device}", "", "Redirections Devices");
-                _client.CreateState($"tp_steelseries-gg_monitoring_redirection_state_{device}", $"{device}", "", "Monitoring Redirections State");
-                _client.CreateState($"tp_steelseries-gg_streaming_redirection_state_{device}", $"{device}", "", "Streaming Redirections State");
+                _client.CreateState($"tp_steelseries-gg_configs_{device}", $"Config - {device}", "", "Configs");
+                _client.CreateState($"tp_steelseries-gg_redirection_device_{device}", $"Redirection Device - {device}", "", "Redirections Devices");
+                _client.CreateState($"tp_steelseries-gg_monitoring_redirection_state_{device}", $"Monitoring Redirection State - {device}", "", "Redirections State");
+                _client.CreateState($"tp_steelseries-gg_streaming_redirection_state_{device}", $"Streaming Redirection State - {device}", "", "Redirections State");
             }
         }
         
@@ -261,7 +261,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
-            Console.WriteLine("If any error happened, the condition in BooleanToMuteState() worked");
             return _muteStatesNames.Split(",")[0];
         }
         return _muteStatesNames.Split(",")[1];
@@ -271,7 +270,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
-            Console.WriteLine("If any error happened, the condition in BooleanToRedirectionState() worked");
             return _redirectionStatesNames.Split(",")[0];
         }
         return _redirectionStatesNames.Split(",")[1];
@@ -281,7 +279,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (state.ToLower() == "true")
         {
-            Console.WriteLine("If any error happened, the condition in BooleanToAudienceMonitoringState() worked");
             return _audienceMonitoringStatesNames.Split(",")[0];
         }
         return _audienceMonitoringStatesNames.Split(",")[1];

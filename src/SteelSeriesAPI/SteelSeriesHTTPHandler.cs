@@ -69,7 +69,8 @@ public class SteelSeriesHTTPHandler
         string sonarWebServerAddress = GetSonarWebServerAddress();
         if (sonarWebServerAddress == null)
         {
-            return;
+            Thread.Sleep(1000);
+            HttpPut(targetedHttp);
         }
         
         HttpResponseMessage? httpResponseMessage = HttpClient.PutAsync(sonarWebServerAddress + targetedHttp, null)
@@ -106,7 +107,13 @@ public class SteelSeriesHTTPHandler
         // Ouvrir l'interface de bouclage pour la capture
         loopbackDevice.OnPacketArrival += (object s, PacketCapture e) =>
         {
-            Packet packet = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
+            var rawPacket = e.GetPacket();
+            if (rawPacket.Data.Length <= 0)
+            {
+                return;
+            }
+            
+            Packet packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
             var ipPacket = packet.Extract<IPPacket>();
             var tcpPacket = ipPacket.Extract<TcpPacket>();
             if (ipPacket != null)
