@@ -115,7 +115,7 @@ public class SteelSeriesHTTPHandler
             catch (ArgumentException exception)
             {
                 Console.WriteLine(exception);
-                throw;
+                return;
             }
             
             Packet packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);

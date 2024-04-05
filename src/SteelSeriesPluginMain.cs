@@ -138,12 +138,20 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 
                 _client.StateUpdate($"tp_steelseries-gg_monitoring_redirection_state_{device}", GetStringRedirectionState(StreamerMode.Monitoring, device));
                 _client.StateUpdate($"tp_steelseries-gg_streaming_redirection_state_{device}", GetStringRedirectionState(StreamerMode.Streaming, device));
-                
-                _client.StateUpdate($"tp_steelseries-gg_redirection_device_{device}", GetSelectedRedirectionDevice(Enum.Parse<MixDevices>(device)).Name);
-                _client.StateUpdate("tp_steelseries-gg_redirection_device_monitoring", GetSelectedRedirectionDevice(StreamerMode.Monitoring).Name);
-                _client.StateUpdate("tp_steelseries-gg_redirection_device_streaming", GetSelectedRedirectionDevice(StreamerMode.Streaming).Name);
+
+                if (GetMode() == Mode.Classic)
+                {
+                    _client.StateUpdate($"tp_steelseries-gg_redirection_device_{device}", GetSelectedRedirectionDevice(Enum.Parse<MixDevices>(device)).Name);
+                }
             }
         }
+
+        if (GetMode() == Mode.Stream)
+        {
+            _client.StateUpdate($"tp_steelseries-gg_redirection_device_Micro", GetSelectedRedirectionDevice(MixDevices.Micro).Name);
+        }
+        _client.StateUpdate("tp_steelseries-gg_redirection_device_monitoring", GetSelectedRedirectionDevice(StreamerMode.Monitoring).Name);
+        _client.StateUpdate("tp_steelseries-gg_redirection_device_streaming", GetSelectedRedirectionDevice(StreamerMode.Streaming).Name);
     }
     
     public string GetMutedState(string virtualDevice, StreamerMode streamerMode = StreamerMode.None)
