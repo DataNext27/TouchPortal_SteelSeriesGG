@@ -481,6 +481,7 @@ public class SteelSeriesHTTPHandler
                         {
                             case "mic":
                                 args.MixDevice = MixDevices.Micro;
+                                args.StreamerMode = StreamerMode.None;
                                 args.Value = subs[4];
                                 break;
                             case "streaming":

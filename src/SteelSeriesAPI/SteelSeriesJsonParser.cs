@@ -342,14 +342,22 @@ public class SteelSeriesJsonParser
                 break;
         }
     }
-
-    public static RedirectionDevice GetSelectedRedirectionDevice(MixDevices device, StreamerMode stream = StreamerMode.None)
+    
+    /// <summary>
+    /// Return the name and id of a redirection device
+    /// </summary>
+    /// <param name="device">The device you want the redirection device</param>
+    /// <returns>RedirectionDevice(Name,Id)</returns>
+    /// <exception cref="Exception"></exception>
+    public static RedirectionDevice GetSelectedRedirectionDevice(MixDevices device)
     {
         if (GetSonarWebServerAddress() == null)
         {
             return null;
         }
-        
+
+        if (device == MixDevices.Master) throw new Exception("Can't retrieve Master redirection device");
+
         switch (GetMode())
         {
             case Mode.Classic:
@@ -383,80 +391,85 @@ public class SteelSeriesJsonParser
                         return new RedirectionDevice(name, id);
                     }
                 }
-
-                return new RedirectionDevice("error", "error");
+                break;
             case Mode.Stream:
-                
                 JsonDocument streamRedirections = JsonDocument.Parse(HttpClient.GetStringAsync(GetSonarWebServerAddress() + "streamRedirections").Result);
-                
-                switch (device)
+                foreach (var element in streamRedirections.RootElement.EnumerateArray())
                 {
-                    case MixDevices.Micro:
-                        foreach (var element in streamRedirections.RootElement.EnumerateArray())
+                    if (element.GetProperty("streamRedirectionId").GetString() == "mic")
+                    {
+                        string id = element.GetProperty("deviceId").GetString();
+                        string name = null;
+                        foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Input))
                         {
-                            if (element.GetProperty("streamRedirectionId").GetString() == "mic")
+                            if (rDevice.Id == id)
                             {
-                                string id = element.GetProperty("deviceId").GetString();
-                                string name = null;
-                                foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Input))
-                                {
-                                    if (rDevice.Id == id)
-                                    {
-                                        name = rDevice.Name;
-                                    }
-                                }
-
-                                return new RedirectionDevice(name, id);
+                                name = rDevice.Name;
                             }
                         }
-                        break;
-                    default:
-                        switch (stream)
-                        {
-                            case StreamerMode.Streaming:
-                                foreach (var element in streamRedirections.RootElement.EnumerateArray())
-                                {
-                                    if (element.GetProperty("streamRedirectionId").GetString() == "streaming")
-                                    {
-                                        string id = element.GetProperty("deviceId").GetString();
-                                        string name = null;
-                                        foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Output))
-                                        {
-                                            if (rDevice.Id == id)
-                                            {
-                                                name = rDevice.Name;
-                                            }
-                                        }
 
-                                        return new RedirectionDevice(name, id);
-                                    }
-                                }
-                                break;
-                            case StreamerMode.Monitoring:
-                                foreach (var element in streamRedirections.RootElement.EnumerateArray())
-                                {
-                                    if (element.GetProperty("streamRedirectionId").GetString() == "monitoring")
-                                    {
-                                        string id = element.GetProperty("deviceId").GetString();
-                                        string name = null;
-                                        foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Output))
-                                        {
-                                            if (rDevice.Id == id)
-                                            {
-                                                name = rDevice.Name;
-                                            }
-                                        }
-
-                                        return new RedirectionDevice(name, id);
-                                    }
-                                }
-                                break;
-                        }
-                        break;
+                        return new RedirectionDevice(name, id);
+                    }
                 }
                 break;
-            default:
-                return new RedirectionDevice("error", "error");
+        }
+        return new RedirectionDevice("error", "error");
+    }
+    
+    /// <summary>
+    /// Return the monitoring or streaming redirection device
+    /// </summary>
+    /// <param name="stream">The stream redirection you want the redirection device</param>
+    /// <returns>RedirectionDevice(Name,Id)</returns>
+    public static RedirectionDevice GetSelectedRedirectionDevice(StreamerMode stream)
+    {
+        if (GetSonarWebServerAddress() == null)
+        {
+            return null;
+        }
+        
+        JsonDocument streamRedirections = JsonDocument.Parse(HttpClient.GetStringAsync(GetSonarWebServerAddress() + "streamRedirections").Result);
+        
+        switch (stream)
+        {
+            case StreamerMode.Streaming:
+                foreach (var element in streamRedirections.RootElement.EnumerateArray())
+                {
+                    if (element.GetProperty("streamRedirectionId").GetString() == "streaming")
+                    {
+                        string id = element.GetProperty("deviceId").GetString();
+                        string name = null;
+                        foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Output))
+                        {
+                            if (rDevice.Id == id)
+                            {
+                                name = rDevice.Name;
+                            }
+                        }
+
+                        return new RedirectionDevice(name, id);
+                    }
+                }
+                break;
+            case StreamerMode.Monitoring:
+                foreach (var element in streamRedirections.RootElement.EnumerateArray())
+                {
+                    if (element.GetProperty("streamRedirectionId").GetString() == "monitoring")
+                    {
+                        string id = element.GetProperty("deviceId").GetString();
+                        string name = null;
+                        foreach (var rDevice in AvailableRedirectionDevices(DeviceType.Output))
+                        {
+                            if (rDevice.Id == id)
+                            {
+                                name = rDevice.Name;
+                            }
+                        }
+
+                        return new RedirectionDevice(name, id);
+                    }
+                }
+                break;
         }
         return new RedirectionDevice("error", "error");
     }

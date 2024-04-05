@@ -1,6 +1,6 @@
 {
     "sdk": 6,
-    "version": 12,
+    "version": 13,
     "name": "SteelSeries GG",
     "id": "steelseries-gg",
     "configuration": {
