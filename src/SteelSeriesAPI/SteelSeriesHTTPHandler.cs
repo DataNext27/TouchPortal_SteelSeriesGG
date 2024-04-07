@@ -77,19 +77,16 @@ public class SteelSeriesHTTPHandler
             .GetAwaiter().GetResult();
         httpResponseMessage.EnsureSuccessStatusCode();
     }
-
-    //public static event EventHandler OnSteelSeriesEvent;
     
     public static void StartSteelSeriesListener()
     {
         var targetPort = new Uri(GetSonarWebServerAddress()).Port;
         
-        // Obtenir la liste des interfaces réseau disponibles
         var devices = CaptureDeviceList.Instance;
 
         if (devices.Count == 0)
         {
-            Console.WriteLine("Aucune interface réseau trouvée.");
+            Console.WriteLine("No network interface found. Npcap is needed");
             return;
         }
 
@@ -98,25 +95,15 @@ public class SteelSeriesHTTPHandler
 
         if (loopbackDevice == null)
         {
-            Console.WriteLine("Aucune interface de bouclage (Loopback) trouvée.");
+            Console.WriteLine("No loopback interface found.");
             return;
         }
         Console.WriteLine("Loopback device name :" + loopbackDevice.Name);
-        Console.WriteLine("Loopback device name :" + loopbackDevice.Description);
+        Console.WriteLine("Loopback device desc :" + loopbackDevice.Description);
 
-        // Ouvrir l'interface de bouclage pour la capture
         loopbackDevice.OnPacketArrival += (object s, PacketCapture e) =>
         {
-            RawCapture rawPacket;
-            try
-            {
-                rawPacket = e.GetPacket();
-            }
-            catch (ArgumentException exception)
-            {
-                Console.WriteLine(exception);
-                return;
-            }
+            RawCapture rawPacket = e.GetPacket();
             
             Packet packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
             var ipPacket = packet.Extract<IPPacket>();
@@ -127,14 +114,23 @@ public class SteelSeriesHTTPHandler
                 {
                     if (tcpPacket.DestinationPort == targetPort || tcpPacket.SourcePort == targetPort)
                     {
-                        string httpData = Encoding.UTF8.GetString(tcpPacket.PayloadData);
+                        string httpData;
+                        try
+                        { 
+                            httpData = Encoding.UTF8.GetString(tcpPacket.PayloadData);
+                        }
+                        catch (ArgumentException exception)
+                        {
+                            //Console.WriteLine("Handled error: " + exception.Message);
+                            return;
+                        }
                         List<string> putData = new List<string>(httpData.Split("\n"));
                         foreach (var line in putData)
                         {
                             if (line.Contains("PUT"))
                             {
                                 Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] {ipPacket.SourceAddress}:{tcpPacket.SourcePort} -> {ipPacket.DestinationAddress}:{tcpPacket.DestinationPort}");
-                                Console.WriteLine(line);
+                                Console.WriteLine(line.Replace("\n", ""));
                                 string path = line.Split(' ')[1];
                                 SteelSeriesEventManager(path);
                             }
@@ -148,12 +144,9 @@ public class SteelSeriesHTTPHandler
         {
             loopbackDevice.Close();
         };
-
-        // Commencer la capture sur l'interface de bouclage
+        
         loopbackDevice.Open(DeviceModes.Promiscuous);
         loopbackDevice.Capture();
-
-        Console.WriteLine($"En attente de paquets HTTP sur le port {targetPort} de l'interface de bouclage.");
     }
     
     static void SteelSeriesEventManager(string path)
