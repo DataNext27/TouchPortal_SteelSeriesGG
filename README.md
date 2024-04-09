@@ -87,6 +87,8 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   
 ## ChangeLog
 ```
+v1.1.5
+  - Fixed a crash that sometimes happened when opening SteelSeries GG
 v1.1.4
   - Bug fixes
   - Added more states for Monitoring and Streaming
