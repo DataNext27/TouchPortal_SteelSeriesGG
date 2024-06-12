@@ -14,7 +14,7 @@ namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
-    private string version = "1.1.5";
+    private string version = "1.2.0";
     private string latestReleaseUrl;
     private OnSteelSeriesEventArgs _lastEventArgs;
     
@@ -33,7 +33,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     public async void Run()
     {
-        Console.WriteLine("Sonar WebServer Address: " + GetSonarWebServerAddress());
+        Console.WriteLine("[SteelSeries GG] Sonar WebServer Address: " + GetSonarWebServerAddress());
         new Thread(StartSteelSeriesListener).Start();
         OnSteelSeriesEvent += OnSteelSeriesEventHandler;
         _client.Connect();

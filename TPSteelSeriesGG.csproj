@@ -5,13 +5,12 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Octokit" Version="10.0.0" />
-      <PackageReference Include="PacketDotNet" Version="1.4.8-pre18" />
-      <PackageReference Include="SharpPcap" Version="6.3.0" />
-      <PackageReference Include="TouchPortal-CS-API" Version="1.46.0" />
+        <PackageReference Include="Octokit" Version="12.0.0" />
+        <PackageReference Include="TouchPortal-CS-API" Version="1.46.0" />
     </ItemGroup>
 
     <ItemGroup>

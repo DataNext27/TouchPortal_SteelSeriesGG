@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text;
-using PacketDotNet;
-using SharpPcap;
+using System.Net;
+using System.Net.Sockets;
 
 namespace TPSteelSeriesGG.SteelSeriesAPI;
 
@@ -22,7 +22,7 @@ public class SteelSeriesHTTPHandler
         }
         catch
         {
-            Console.WriteLine("Error: Could not find coreProps.json");
+            Console.WriteLine("[SteelSeries GG] Error: Could not find coreProps.json");
             throw;
         }
     }
@@ -37,7 +37,7 @@ public class SteelSeriesHTTPHandler
     {
         if (!IsSteelSeriesGGRunning())
         {
-            Console.WriteLine("Sonar not running, retrying in 1 sec");
+            Console.WriteLine("[SteelSeries GG] Sonar not running, retrying in 1 sec");
             Thread.Sleep(1000);
             GetSonarWebServerAddress();
         }
@@ -82,71 +82,57 @@ public class SteelSeriesHTTPHandler
     {
         var targetPort = new Uri(GetSonarWebServerAddress()).Port;
         
-        var devices = CaptureDeviceList.Instance;
+        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+        
+        socket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), targetPort));
+        
+        socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.HeaderIncluded, true);
+        byte[] optionIn = new byte[4] { 1, 0, 0, 0 };
+        byte[] optionOut = new byte[4];
+        socket.IOControl(IOControlCode.ReceiveAll, optionIn, optionOut);
 
-        if (devices.Count == 0)
+        
+        byte[] buffer = new byte[4096];
+        EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), targetPort);
+
+        Console.WriteLine("[SteelSeries GG] Listening for SteelSeries GG on port " + targetPort + "...");
+
+        while (true)
         {
-            Console.WriteLine("No network interface found. Npcap is needed");
-            return;
-        }
-
-        // Recherchez l'interface de bouclage (Loopback) parmi les interfaces disponibles
-        var loopbackDevice = devices.FirstOrDefault(device => device.Name.Contains("Loopback"));
-
-        if (loopbackDevice == null)
-        {
-            Console.WriteLine("No loopback interface found.");
-            return;
-        }
-        Console.WriteLine("Loopback device name :" + loopbackDevice.Name);
-        Console.WriteLine("Loopback device desc :" + loopbackDevice.Description);
-
-        loopbackDevice.OnPacketArrival += (object s, PacketCapture e) =>
-        {
-            RawCapture rawPacket = e.GetPacket();
-            
-            Packet packet = Packet.ParsePacket(rawPacket.LinkLayerType, rawPacket.Data);
-            var ipPacket = packet.Extract<IPPacket>();
-            var tcpPacket = ipPacket.Extract<TcpPacket>();
-            if (ipPacket != null)
+            int bytesRead = 0;
+            try
             {
-                if (tcpPacket != null)
+                bytesRead = socket.ReceiveFrom(buffer, ref remoteEndPoint);
+            }
+            catch (SocketException e)
+            {
+                // Console.WriteLine("[SteelSeries GG] Received bigger packet than expected -> Not SteelSeries packet, skipping this packet");
+                continue;
+            }
+            
+            string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            
+            if (data.Contains("PUT"))
+            {
+                string putData = "";
+                List<string> httpData = new List<string>(data.Split("\n"));
+                foreach (string line in httpData)
                 {
-                    if (tcpPacket.DestinationPort == targetPort || tcpPacket.SourcePort == targetPort)
+                    if (line.Contains("PUT"))
                     {
-                        string httpData;
-                        try
-                        { 
-                            httpData = Encoding.UTF8.GetString(tcpPacket.PayloadData);
-                        }
-                        catch (ArgumentException exception)
-                        {
-                            //Console.WriteLine("Handled error: " + exception.Message);
-                            return;
-                        }
-                        List<string> putData = new List<string>(httpData.Split("\n"));
-                        foreach (var line in putData)
-                        {
-                            if (line.Contains("PUT"))
-                            {
-                                Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] {ipPacket.SourceAddress}:{tcpPacket.SourcePort} -> {ipPacket.DestinationAddress}:{tcpPacket.DestinationPort}");
-                                Console.WriteLine(line.Replace("\n", ""));
-                                string path = line.Split(' ')[1];
-                                SteelSeriesEventManager(path);
-                            }
-                        }
+                        putData = line;
+                        break;
                     }
                 }
+                if (!string.IsNullOrEmpty(putData))
+                {
+                    Console.WriteLine($"[SteelSeries GG] {DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] PUT " + putData.Split("PUT ")[1]);
+                    Console.WriteLine($"[SteelSeries GG] {DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] Port:" + targetPort + " Byte Readed:" + bytesRead);
+                    string path = putData.Split("PUT ")[1].Split(" HTTP")[0];
+                    SteelSeriesEventManager(path);
+                }
             }
-        };
-
-        loopbackDevice.OnCaptureStopped += (sender, e) =>
-        {
-            loopbackDevice.Close();
-        };
-        
-        loopbackDevice.Open(DeviceModes.Promiscuous);
-        loopbackDevice.Capture();
+        }
     }
     
     static void SteelSeriesEventManager(string path)
