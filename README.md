@@ -1,7 +1,12 @@
 # SteelSeries GG Plugin for Touch Portal
 ![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FTouchPortal_SteelSeriesGG%2Freleases)
-![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FTouchPortal_SteelSeriesGG%2Freleases%2Flatest)
+![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FTouchPortal_SteelSeriesGG%2Freleases%2F1.1.5)
 <a href='https://ko-fi.com/M4M2VL6WW' target='_blank'><img height='29' style='border:0px;height:29px;' src='https://storage.ko-fi.com/cdn/brandasset/kofi_button_dark.png' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> </br> 
+</br>
+This branch is for using the plugin with Npcap </br>
+If you don't want to use Npcap, click [here](https://github.com/DataNext27/TouchPortal_SteelSeriesGG) </br>
+Note: This branch won't be updated/maintained </br>
+</br>
 This plugin allows you to control to control SteelSeries GG Sonar with Touch Portal<br>
 /!\ This plugin allows you to control Sonar and only Sonar for the moment! </br>
 /!\ May not be supported on Linux and Mac
@@ -19,9 +24,10 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   - [Authors](#authors)
 
 ## Installation
+Follow this installation process only if you want to use Npcap to make the plugin work
 1. Download and install [Npcap](https://npcap.com/#download) (Used by the plugin to discuss with Sonar)
    - If not already installed on your pc, install [.NET Runtime 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0/runtime?cid=getdotnetcore&os=windows&arch=x64)
-2. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin 
+2. Download the [latest version using Npcap](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/1.1.5) of the plugin 
 3. Open Touch Portal
    - Click the settings button
    - Click import plugin
