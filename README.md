@@ -19,14 +19,14 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   - [Authors](#authors)
 
 ## Installation
-1. Download and install [Npcap](https://npcap.com/#download) (Used by the plugin to discuss with Sonar)
-   - If not already installed on your pc, install [.NET Runtime 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0/runtime?cid=getdotnetcore&os=windows&arch=x64)
-2. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin 
-3. Open Touch Portal
+1. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin
+    - If not already installed on your pc, install [.NET Runtime 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0/runtime?cid=getdotnetcore&os=windows&arch=x64)
+2. Open Touch Portal
    - Click the settings button
    - Click import plugin
    - Find the plugin file you've just downloaded and open it
-4. Wait a bit till it finish loading
+3. Wait a bit till it finish loading
+4. It should ask you admin rights, click yes
 5. Restart Touch Portal
 6. Now start setting up buttons or sliders
 
@@ -87,6 +87,9 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   
 ## ChangeLog
 ```
+v1.2.0
+  - New system to communicate with SteelSeries
+  - Npcap is now deprecated to use with the plugin
 v1.1.5
   - Fixed a crash that sometimes happened when opening SteelSeries GG
 v1.1.4
@@ -123,10 +126,10 @@ v1.0.0
 ```
 
 ## FAQs
-- **What is Npcap and why using it?**</br>
-  Npcap is a driver which listen to http packets on your PC.</br>
-  Using it allow to update Touch Portal sliders when moving a slider on Sonar.
-
+- **Why does it ask for admin rights (UAC) when Touch Portal starts/importing the plugin ?**</br>
+  The plugin needs administator privileges to communicate with SteelSeries GG.</br>
+  Also this is a replacement for Npcap.
+  
 - **Why the sliders on Sonar seems to not update when I'm in Streamer Mode?**</br>
   This is a Sonar graphical bug. You should be able to use the plugin like it is intended.
 
@@ -136,9 +139,6 @@ v1.0.0
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
- - [Npcap](https://npcap.com/)
- - [sharppcap](https://github.com/dotpcap/sharppcap)
- - [Packet.Net](https://github.com/dotpcap/packetnet)
 
 ## Authors
  - Made by DataNext
@@ -146,4 +146,3 @@ v1.0.0
 Thanks to:
  - Touch Portal Creators for Touch Portal App
  - [mpaperno](https://github.com/mpaperno) for the Touch Portal C# API
- - [dotpcap](https://github.com/dotpcap) team for sharppcap and Packet.Net
