@@ -33,7 +33,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     public async void Run()
     {
-        Console.WriteLine("[SteelSeries GG] Sonar WebServer Address: " + GetSonarWebServerAddress());
+        Console.WriteLine("Sonar WebServer Address: " + GetSonarWebServerAddress());
         new Thread(StartSteelSeriesListener).Start();
         OnSteelSeriesEvent += OnSteelSeriesEventHandler;
         _client.Connect();

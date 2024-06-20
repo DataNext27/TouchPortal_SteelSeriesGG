@@ -12,13 +12,13 @@ public class SteelSeriesHttpActionHandler
         isChangingMode = true;
         if (mode != Mode.Classic && mode != Mode.Stream)
         {
-            Console.WriteLine("Error: mode does not exist");
+            Console.Error.WriteLine("mode does not exist");
             return;
         }
 
         if (mode == GetMode())
         {
-            Console.WriteLine("Error: mode is already set");
+            Console.Error.WriteLine("mode is already set");
             return;
         }
         

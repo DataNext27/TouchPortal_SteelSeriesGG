@@ -22,7 +22,7 @@ public class SteelSeriesHTTPHandler
         }
         catch
         {
-            Console.WriteLine("[SteelSeries GG] Error: Could not find coreProps.json");
+            Console.Error.WriteLine("Could not find coreProps.json");
             throw;
         }
     }
@@ -37,7 +37,7 @@ public class SteelSeriesHTTPHandler
     {
         if (!IsSteelSeriesGGRunning())
         {
-            Console.WriteLine("[SteelSeries GG] Sonar not running, retrying in 1 sec");
+            Console.Error.WriteLine("Sonar not running, retrying in 1 sec");
             Thread.Sleep(1000);
             GetSonarWebServerAddress();
         }
@@ -95,7 +95,7 @@ public class SteelSeriesHTTPHandler
         byte[] buffer = new byte[4096];
         EndPoint remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), targetPort);
 
-        Console.WriteLine("[SteelSeries GG] Listening for SteelSeries GG on port " + targetPort + "...");
+        Console.WriteLine("Listening for SteelSeries GG on port " + targetPort + "...");
 
         while (true)
         {
@@ -106,19 +106,19 @@ public class SteelSeriesHTTPHandler
             }
             catch (SocketException e)
             {
-                // Console.WriteLine("[SteelSeries GG] Received bigger packet than expected -> Not SteelSeries packet, skipping this packet");
+                // Console.Error.WriteLine("Received bigger packet than expected -> Not SteelSeries packet, skipping this packet");
                 continue;
             }
             
             string data = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             
-            if (data.Contains("PUT"))
+            if (data.Contains("PUT "))
             {
                 string putData = "";
                 List<string> httpData = new List<string>(data.Split("\n"));
                 foreach (string line in httpData)
                 {
-                    if (line.Contains("PUT"))
+                    if (line.Contains("PUT "))
                     {
                         putData = line;
                         break;
@@ -126,8 +126,8 @@ public class SteelSeriesHTTPHandler
                 }
                 if (!string.IsNullOrEmpty(putData))
                 {
-                    Console.WriteLine($"[SteelSeries GG] {DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] PUT " + putData.Split("PUT ")[1]);
-                    Console.WriteLine($"[SteelSeries GG] {DateTime.Now.ToString("HH:mm:ss")} [HTTP Packet] Port:" + targetPort + " Byte Readed:" + bytesRead);
+                    Console.WriteLine("[HTTP Packet] PUT " + putData.Split("PUT ")[1]);
+                    Console.WriteLine("[HTTP Packet] Port:" + targetPort + " Byte Readed:" + bytesRead);
                     string path = putData.Split("PUT ")[1].Split(" HTTP")[0];
                     SteelSeriesEventManager(path);
                 }
