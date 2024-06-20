@@ -87,6 +87,8 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   
 ## ChangeLog
 ```
+v1.2.1
+  - Added new logging system
 v1.2.0
   - New system to communicate with SteelSeries
   - Npcap is now deprecated to use with the plugin
@@ -135,7 +137,7 @@ v1.0.0
 
 - **I got an error, what should I do?**</br>
   You can try restarting the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
-  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can activate at the bottom of the log list in Touch Portal)
+  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can find in the plugin folder)
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
