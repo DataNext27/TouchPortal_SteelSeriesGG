@@ -136,8 +136,9 @@ v1.0.0
   This is a Sonar graphical bug. You should be able to use the plugin like it is intended.
 
 - **I got an error, what should I do?**</br>
-  You can try restarting the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
-  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can find in the plugin folder)
+  You can try restarting Touch Portal or the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
+  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can find in the plugin folder)</br>
+  You can also go on the [Touch Portal Discord](https://discord.gg/MgxQb8r) to ask for help
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
