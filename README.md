@@ -133,7 +133,11 @@ v1.0.0
   Also this is a replacement for Npcap.
   
 - **Why the sliders on Sonar seems to not update when I'm in Streamer Mode?**</br>
-  This is a Sonar graphical bug. You should be able to use the plugin like it is intended.
+  This is a Sonar graphical bug. You should be able to use the plugin like it is intended.</br>
+  To see the sliders updated, simply close and reopen GG.
+
+- **Why changing mode doesn't seem to work?**</br>
+  Same as above, it is also a graphical bug.
 
 - **I got an error, what should I do?**</br>
   You can try restarting Touch Portal or the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
