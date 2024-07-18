@@ -131,16 +131,14 @@ v1.0.0
 - **Why does it ask for admin rights (UAC) when Touch Portal starts/importing the plugin ?**</br>
   The plugin needs administator privileges to communicate with SteelSeries GG.</br>
   Also this is a replacement for Npcap.
-  
-- **Why the sliders on Sonar seems to not update when I'm in Streamer Mode?**</br>
-  This is a Sonar graphical bug. You should be able to use the plugin like it is intended.</br>
-  To see the sliders updated, simply close and reopen GG.
 
-- **Why changing mode doesn't seem to work?**</br>
-  Same as above, it is also a graphical bug.
+- **Why some actions doesn't seem to work/update on Sonar?**</br>
+  This is probably a Sonar graphical bug. Actually, there are lot of graphical bugs on Sonar which I can't fix. But you should be able to use the plugin like it is intended.</br>
+  To verify if the plugin is working, you can etheir go on classic mode and change the volume, or push one of your buttons and close the SteelSeries window and then reopening it to see if it actually worked/updated.</br>
+  Most commonly asked bugs are when changing mode and when changing streamer mode volume
 
 - **I got an error, what should I do?**</br>
-  You can try restarting Touch Portal or the plugin, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
+  You can try restarting Touch Portal or the plugin and verify you installed .NET Runtime, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
   To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can find in the plugin folder)</br>
   You can also go on the [Touch Portal Discord](https://discord.gg/MgxQb8r) to ask for help
 
