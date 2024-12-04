@@ -20,7 +20,7 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
 
 ## Installation
 1. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin
-    - If not already installed on your pc, install [.NET Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/latest/runtime?cid=getdotnetcore&os=windows&arch=x64) (Console or Desktop)
+    - If not already installed on your pc, install [.NET Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/latest/runtime?cid=getdotnetcore&os=windows&arch=x64) $${\color{grey}(Console \space or \space Desktop)}$$
 2. Open Touch Portal
    - Click the settings button
    - Click import plugin
