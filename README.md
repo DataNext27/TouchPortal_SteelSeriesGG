@@ -87,6 +87,8 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
   
 ## ChangeLog
 ```
+v1.2.2
+  - Added support for latest .NET version (Roll Forward)
 v1.2.1
   - Added new logging system
 v1.2.0
