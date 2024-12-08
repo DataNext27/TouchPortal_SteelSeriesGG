@@ -1,9 +1,4 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+TPSteelSeriesGG/bin/
+TPSteelSeriesGG/obj/
 *.tpp
 .idea/
-img/SteelSeries Sonar.png
-img/SteelSeries Sonar.psd
