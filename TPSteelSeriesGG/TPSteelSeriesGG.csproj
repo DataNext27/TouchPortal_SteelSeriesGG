@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="Steelseries-NET-API" Version="1.0.0" />
+      <PackageReference Include="TouchPortal-CS-API" Version="1.47.1" />
     </ItemGroup>
 
 </Project>
