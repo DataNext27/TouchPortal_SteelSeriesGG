@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
-        <ApplicationIcon>icon-24.ico</ApplicationIcon>
+        <ApplicationIcon>..\icon-24.ico</ApplicationIcon>
         <RollForward>LatestMajor</RollForward>
     </PropertyGroup>
 
@@ -24,10 +24,6 @@
             <PackagePath>\</PackagePath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="..\icon-24.ico">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
@@ -35,4 +31,12 @@
       <PackageReference Include="TouchPortal-CS-API" Version="1.47.1" />
     </ItemGroup>
 
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="echo Configuration: $(Configuration)&#xD;&#xA;echo DevEnvDir: $(DevEnvDir)&#xD;&#xA;echo OutDir: $(OutDir)&#xD;&#xA;echo ProjectDir: $(ProjectDir)&#xD;&#xA;echo VisualStudioVersion: $(VisualStudioVersion)&#xD;&#xA;echo AssemblySearchPaths: $(AssemblySearchPaths)&#xD;&#xA;echo AssemblyName: $(AssemblyName)&#xD;&#xA;echo BaseIntermediateOutputPath: $(BaseIntermediateOutputPath)&#xD;&#xA;echo CscToolPath: $(CscToolPath)" />
+        <Exec Command="rmdir /s /q $(OutDir)TPSteelSeriesGG" />
+    </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="mkdir $(OutDir)TPSteelSeriesGG&#xD;&#xA;MOVE /Y $(OutDir)* $(OutDir)TPSteelSeriesGG" />
+    </Target>
+    
 </Project>
