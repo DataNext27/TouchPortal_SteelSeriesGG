@@ -19,7 +19,7 @@
           "id": "tp_steelseries-gg_switch_mode",
           "name": "Switch mode",
           "lines": {
-            "actions": [
+            "action": [
               {
                 "language": "default",
                 "data": [
@@ -37,7 +37,7 @@
           "id": "tp_steelseries-gg_set_mode",
           "name": "Set actual mode",
           "lines": {
-            "actions": [
+            "action": [
               {
                 "language": "default",
                 "data": [
@@ -65,7 +65,7 @@
           "id": "tp_steelseries-gg_set_config",
           "name": "Change device config",
           "lines": {
-            "actions": [
+            "action": [
               {
                 "language": "default",
                 "data": [
