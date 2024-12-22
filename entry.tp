@@ -1,0 +1,90 @@
+{
+  "api": 10,
+  "version": 200,
+  "name": "SteelSeries GG",
+  "id": "steelseries-gg",
+  "configuration": {
+    "colorDark": "#232B32",
+    "colorLight": "#272F37",
+    "parentCategory": "audio"
+  },
+  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\TPSteelSeriesGG.exe",
+  "categories": [
+    {
+      "id": "sonar",
+      "name": "SteelSeries GG Sonar",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [
+        {
+          "id": "tp_steelseries-gg_switch_mode",
+          "name": "Switch mode",
+          "type": "communicate"
+        }
+      ],
+      "connectors": [
+        {
+          "id": "tp_steelseries-gg_classic_set_volume",
+          "name": "Change classic mode volume",
+          "format": "Change volume of {$device$}",
+          "data": [
+            {
+              "id": "device",
+              "type": "choice",
+              "label": "choice",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_stream_set_volume",
+          "name": "Change steamer mode volume",
+          "format": "Change {$channel$} volume of {$device$}",
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "choice",
+              "default": "Monitoring",
+              "valueChoices": [
+                "Monitoring",
+                "Stream"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "label": "choice",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_chatmix_balance",
+          "name": "Set ChatMix Balance",
+          "format": "Adjust ChatMix balance",
+          "data": []
+        }
+      ],
+      "states": [ ],
+      "events": [ ],
+      "subCategories": [ ]
+    }
+  ],
+  "settings": [ ]
+}
