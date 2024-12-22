@@ -13,12 +13,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     private readonly ITouchPortalClient _client;
 
-    private SonarBridge sonarManager;
+    private readonly SonarBridge _sonarManager;
 
     public SteelSeriesPluginMain()
     {
         _client = TouchPortalFactory.CreateClient(this);
-        sonarManager = new SonarBridge();
+        _sonarManager = new SonarBridge();
     }
 
     public void Run()
@@ -29,7 +29,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     public void OnClosedEvent(string message)
     {
-        sonarManager.StopListener();
+        _sonarManager.StopListener();
         Environment.Exit(0);
     }
 
@@ -38,17 +38,17 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         switch (message.ConnectorId)
         {
             case "tp_steelseries-gg_classic_set_volume":
-                sonarManager.SetVolume(message.Value / 100f, (Device)Enum.Parse(typeof(Device), message["device"], true)); 
+                _sonarManager.SetVolume(message.Value / 100f, (Device)Enum.Parse(typeof(Device), message["device"], true)); 
                 break;
             
             case "tp_steelseries-gg_stream_set_volumes":
-                sonarManager.SetVolume(message.Value / 100f,
+                _sonarManager.SetVolume(message.Value / 100f,
                     (Device)Enum.Parse(typeof(Device), message["device"], true),
                     (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 break;
             
             case "tp_steelseries-gg_set_chatmix_balance":
-                sonarManager.SetChatMixBalance((message.Value / 100f) * (1 - -1) + -1);
+                _sonarManager.SetChatMixBalance((message.Value / 100f) * (1 - -1) + -1);
                 break;
         }
     }
