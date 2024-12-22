@@ -33,6 +33,23 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         Environment.Exit(0);
     }
 
+    public void OnActionEvent(ActionEvent message)
+    {
+        switch (message.ActionId)
+        {
+            case "tp_steelseries-gg_switch_mode":
+                if (_sonarManager.GetMode() == Mode.Classic) _sonarManager.SetMode(Mode.Streamer);
+                else _sonarManager.SetMode(Mode.Classic);
+                break;
+            case "tp_steelseries-gg_set_mode":
+                _sonarManager.SetMode((Mode)Enum.Parse(typeof(Mode), message["mode"], true));
+                break;
+            case "tp_steelseries-gg_set_config":
+                _sonarManager.SetConfig((Device)Enum.Parse(typeof(Device), message["device"], true), message["config"]);
+                break;
+        }
+    }
+    
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)
     {
         switch (message.ConnectorId)
@@ -49,6 +66,21 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             
             case "tp_steelseries-gg_set_chatmix_balance":
                 _sonarManager.SetChatMixBalance((message.Value / 100f) * (1 - -1) + -1);
+                break;
+        }
+    }
+    
+    public void OnListChangedEvent(ListChangeEvent message)
+    {
+        switch (message.ActionId)
+        {
+            case "tp_steelseries-gg_set_config":
+                switch (message.ListId)
+                {
+                    case "device":
+                        _client.ChoiceUpdate("config", _sonarManager.GetAudioConfigurations((Device)Enum.Parse(typeof(Device), message.Value, true)).Select(config => config.Name).ToArray());
+                        break;  
+                }
                 break;
         }
     }

@@ -18,7 +18,85 @@
         {
           "id": "tp_steelseries-gg_switch_mode",
           "name": "Switch mode",
-          "type": "communicate"
+          "lines": {
+            "actions": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Switch mode"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_mode",
+          "name": "Set actual mode",
+          "lines": {
+            "actions": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set mode to {$mode$} mode"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "mode",
+              "type": "choice",
+              "default": "Classic",
+              "valueChoices": [
+                "Classic",
+                "Streamer"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_config",
+          "name": "Change device config",
+          "lines": {
+            "actions": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Change {$device$} config to {$config$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "config",
+              "type": "choice",
+              "default": "",
+              "valueChoices": [ ]
+            }
+          ]
         }
       ],
       "connectors": [
