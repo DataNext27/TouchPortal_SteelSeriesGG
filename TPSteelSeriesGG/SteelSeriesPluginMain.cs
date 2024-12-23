@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SteelSeriesAPI;
+using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar.Enums;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
@@ -24,7 +25,10 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     public void Run()
     {
         _client.Connect();
-        // sonarManager.StartListener();
+        
+        _sonarManager.StartListener();
+        _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
+        _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
     }
 
     public void OnClosedEvent(string message)
@@ -83,5 +87,22 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 }
                 break;
         }
+    }
+
+    void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
+    {
+        if (eventArgs.Mode == Mode.Classic)
+        {
+            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+        }
+        else
+        {
+            _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={eventArgs.Channel.ToString()}|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+        }
+    }
+
+    void OnChatMixChangeHandler(object? sender, SonarChatMixEvent eventArgs)
+    {
+        _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f)+1)*50));
     }
 }
