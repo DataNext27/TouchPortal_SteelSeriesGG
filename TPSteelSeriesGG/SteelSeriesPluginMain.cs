@@ -80,7 +80,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 _sonarManager.SetVolume(message.Value / 100f, (Device)Enum.Parse(typeof(Device), message["device"], true)); 
                 break;
             
-            case "tp_steelseries-gg_stream_set_volumes":
+            case "tp_steelseries-gg_stream_set_volume":
                 _sonarManager.SetVolume(message.Value / 100f,
                     (Device)Enum.Parse(typeof(Device), message["device"], true),
                     (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
