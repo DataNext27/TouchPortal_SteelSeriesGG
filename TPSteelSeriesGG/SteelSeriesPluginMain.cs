@@ -87,7 +87,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 break;
             
             case "tp_steelseries-gg_set_chatmix_balance":
-                _sonarManager.SetChatMixBalance((message.Value / 100f) * (1 - -1) + -1);
+                if (_sonarManager.GetChatMixState()) { _sonarManager.SetChatMixBalance((message.Value / 100f) * (1 - -1) + -1); }
+                else
+                {
+                    Thread.Sleep(500);
+                    _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", 50);
+                }
                 break;
         }
     }
