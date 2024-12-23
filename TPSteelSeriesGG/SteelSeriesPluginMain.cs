@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SteelSeriesAPI;
+﻿using SteelSeriesAPI;
 using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar.Enums;
 using TouchPortalSDK;

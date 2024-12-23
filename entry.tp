@@ -102,7 +102,8 @@
       "connectors": [
         {
           "id": "tp_steelseries-gg_classic_set_volume",
-          "name": "Change classic mode volume",
+          "name": "Change volume",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
           "format": "Change volume of {$device$}",
           "data": [
             {
@@ -122,8 +123,9 @@
           ]
         },
         {
-          "id": "tp_steelseries-gg_stream_set_volume",
-          "name": "Change steamer mode volume",
+          "id": "tp_steelseries-gg_streamer_set_volume",
+          "name": "Change volume",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
           "format": "Change {$channel$} volume of {$device$}",
           "data": [
             {
@@ -161,7 +163,16 @@
       ],
       "states": [ ],
       "events": [ ],
-      "subCategories": [ ]
+      "subCategories": [
+        {
+          "id": "tp_steelseries-gg_sonar.classic",
+          "name": "Classic Mode"
+        },
+        {
+          "id": "tp_steelseries-gg_sonar.streamer",
+          "name": "Streamer Mode"
+        }
+      ]
     }
   ],
   "settings": [ ]
