@@ -3,4 +3,7 @@ TPSteelSeriesGG/obj/
 *.tpp
 .idea/
 *.psd
-*.user
+
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
