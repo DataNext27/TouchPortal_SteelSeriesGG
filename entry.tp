@@ -154,7 +154,7 @@
         },
         {
           "id": "tp_steelseries-gg_set_chatmix_balance",
-          "name": "Set ChatMix Balance",
+          "name": "Change ChatMix Balance",
           "format": "Adjust ChatMix balance",
           "data": []
         }
