@@ -1,8 +1,9 @@
 # SteelSeries GG Plugin for Touch Portal
-![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FTouchPortal_SteelSeriesGG%2Freleases)
-![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version&link=https%3A%2F%2Fgithub.com%2FDataNext27%2FTouchPortal_SteelSeriesGG%2Freleases%2Flatest)
 <a href='https://ko-fi.com/M4M2VL6WW' target='_blank'><img height='29' style='border:0px;height:29px;' src='https://storage.ko-fi.com/cdn/brandasset/kofi_button_dark.png' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> </br> 
-This plugin allows you to control to control SteelSeries GG Sonar with Touch Portal<br>
+[![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases)
+[![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest)
+[![Ko-fi](https://img.shields.io/badge/Support_me_on-Ko--fi-FF6433?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/M4M2VL6WW)  
+This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
 ⚠️ This plugin allows you to control Sonar and only Sonar for the moment! </br>
 ⚠️ May not be supported on Linux and Mac
 
@@ -22,22 +23,23 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
 1. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin
     - If not already installed on your pc, install [.NET Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/latest/runtime?cid=getdotnetcore&os=windows&arch=x64) $${\color{grey}(Console \space or \space Desktop)}$$
 2. Open Touch Portal
-   - Click the settings button
+   - Click the quick actions button
    - Click import plugin
    - Find the plugin file you've just downloaded and open it
 3. Wait a bit till it finish loading
-4. It should ask you admin rights, click yes
+4. It should ask you for admin rights, click yes
 5. Restart Touch Portal
 6. Now start setting up buttons or sliders
 
 ## Plugin Capabilities
 ### Actions
+ - Switch Mode
+ - Toggle mute
  - Change Config
- - Change Streamer mode
- - Mute / Unmute
  - Change Redirections Devices
- - Enable / Disable Monitoring and Steaming Redirections for Streamer mode
- - Enable / Disable listening to what your audience hears for Streamer mode
+ - Toggle Redirections States
+ - Toggle Audience Monitoring
+ - Route current window audio to chosen device
 
 ### Sliders
  - Change Volume
@@ -56,17 +58,19 @@ This plugin allows you to control to control SteelSeries GG Sonar with Touch Por
    - Values: -1 to 1
  - ChatMix State
    - Values: True/False
-   - Note: True if game and chat redirections devices are the same
+   - Note: True if game and chat redirections devices are the same, else False
  - Redirections Devices
-   - Value: Name of the selected redirection device of the chosen virtual device
+   - Value: Name of the selected redirection device of the chosen device
 - Configs
-  - Values: Chosen virtual device selected config
+  - Values: Chosen device selected config
 - Redirections State
   - Values: Enabled, Disabled
   - Note: Can be changed in settings
 - Audience Monitoring State
   - Values: Enabled, Disabled
   - Note: Can be changed in settings
+- Routed Processes Names
+  - Values: Names of apps routed to a specific device
  
 ## Settings
  - Muted States Names
@@ -130,22 +134,23 @@ v1.0.0
 ```
 
 ## FAQs
-- **Why does it ask for admin rights (UAC) when Touch Portal starts/importing the plugin ?**</br>
-  The plugin needs administator privileges to communicate with SteelSeries GG.</br>
+- **Why does it ask for admin rights (UAC) when Touch Portal starts/import the plugin ?**</br>
+  The plugin needs administrator privileges to communicate with SteelSeries GG.</br>
   Also this is a replacement for Npcap.
 
 - **Why some actions doesn't seem to work/update on Sonar?**</br>
-  This is probably a Sonar graphical bug. Actually, there are lot of graphical bugs on Sonar which I can't fix. But you should be able to use the plugin like it is intended.</br>
-  To verify if the plugin is working, you can etheir go on classic mode and change the volume, or push one of your buttons and close the SteelSeries window and then reopening it to see if it actually worked/updated.</br>
-  Most commonly asked bugs are when changing mode and when changing streamer mode volume
+  This is probably a Sonar graphical bug. Actually, there are lots of graphical bugs on Sonar which I can't fix. But you should be able to use the plugin like it is intended.</br>
+  To verify if the plugin is working, you can either go on classic mode and change the volume, or push one of your buttons and close the SteelSeries window and then reopening it to see if it actually worked/updated.</br>
+  Most commonly asked bugs are when changing mode and when changing streamer mode volume, so maybe you can find an answer about this somewhere
 
 - **I got an error, what should I do?**</br>
   You can try restarting Touch Portal or the plugin and verify you installed .NET Runtime, if it doesn't fix the problem, go [check the issues](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues?q=is%3Aissue) or [create an issue](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/issues/new).</br>
-  To create an issue, make sure to give enough informations such as describing the problem, windows version, plugin version, plugins logs (which you can find in the plugin folder)</br>
+  To create an issue, make sure to give enough information such as describing the problem, Windows version, plugin version, plugins logs (which you can find in the plugin folder)</br>
   You can also go on the [Touch Portal Discord](https://discord.gg/MgxQb8r) to ask for help
 
 ## Dependencies
  - [TouchPortal-CS-API](https://github.com/mpaperno/TouchPortal-CS-API)
+ - [SteelSeries-NET-API](https://github.com/DataNext27/SteelSeries-NET-API)
 
 ## Authors
  - Made by DataNext
