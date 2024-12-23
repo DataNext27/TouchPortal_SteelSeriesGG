@@ -121,11 +121,29 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (eventArgs.Mode == Mode.Classic)
         {
-            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+            if (eventArgs.Device != Device.Mic)
+            {
+                foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
+                {
+                    if (eventArgs.Device == Device.Mic) continue;
+                    _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", (int)(_sonarManager.GetVolume(device) * 100f));
+                }
+            }
+            else
+            {
+                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={eventArgs.Device.ToString()}", (int)(_sonarManager.GetVolume(eventArgs.Device) * 100f));
+            }
+            
         }
         else
         {
-            _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={eventArgs.Channel.ToString()}|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+            foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
+            {
+                foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
+                {
+                    _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", (int)(_sonarManager.GetVolume(device, channel) * 100f));
+                }
+            }
         }
     }
 
