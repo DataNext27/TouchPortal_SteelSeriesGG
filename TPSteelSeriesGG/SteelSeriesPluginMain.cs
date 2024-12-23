@@ -25,6 +25,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     public void Run()
     {
         _client.Connect();
+        _sonarManager.WaitUntilSonarStarted();
         
         _sonarManager.StartListener();
         _sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
