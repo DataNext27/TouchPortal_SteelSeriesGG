@@ -1,5 +1,4 @@
 # SteelSeries GG Plugin for Touch Portal
-<a href='https://ko-fi.com/M4M2VL6WW' target='_blank'><img height='29' style='border:0px;height:29px;' src='https://storage.ko-fi.com/cdn/brandasset/kofi_button_dark.png' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> </br> 
 [![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases)
 [![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Support_me_on-Ko--fi-FF6433?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/M4M2VL6WW)  
