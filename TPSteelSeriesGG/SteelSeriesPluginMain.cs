@@ -15,6 +15,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     private readonly ITouchPortalClient _client;
 
     private readonly SonarBridge _sonarManager;
+    
+    // Keep track of connectors level
+    // Master, Game, Chat, Media, Aux, Mic
+    private int[] _connectorsLevel = [-1, -1, -1, -1, -1, -1];
+    private int[][] _connectorsLevelStreamer = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]];
 
     public SteelSeriesPluginMain()
     {
@@ -40,10 +45,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         // Initialize sliders
         foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
         {
-            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", (int)(_sonarManager.GetVolume(device) * 100f));
+            var level = (int)(_sonarManager.GetVolume(device) * 100f);
+            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", level);
+            _connectorsLevel[(int) device] = level;
+            
             foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
             {
-                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", (int)(_sonarManager.GetVolume(device, channel) * 100f));
+                level = (int)(_sonarManager.GetVolume(device, channel) * 100f);
+                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", level);
+                _connectorsLevelStreamer[(int) device][(int) channel] = level;
             }
         }
         
@@ -122,28 +132,43 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         if (eventArgs.Mode == Mode.Classic)
         {
-            if (eventArgs.Device != Device.Mic)
+            if ((eventArgs.Device == Device.Master || eventArgs.Volume > _sonarManager.GetVolume(Device.Master)) && eventArgs.Device != Device.Mic)
             {
                 foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
                 {
                     if (eventArgs.Device == Device.Mic) continue;
-                    _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", (int)(_sonarManager.GetVolume(device) * 100f));
+                    var level = (int)(_sonarManager.GetVolume(device) * 100f);
+                    if (_connectorsLevel[(int) device] == level) continue;
+                    _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", level);
+                    _connectorsLevel[(int)device] = level;
                 }
             }
             else
             {
-                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={eventArgs.Device.ToString()}", (int)(_sonarManager.GetVolume(eventArgs.Device) * 100f));
+                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+                _connectorsLevel[(int)eventArgs.Device] = (int)(eventArgs.Volume * 100f);
             }
-            
         }
         else
         {
-            foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
+            if ((eventArgs.Device == Device.Master || eventArgs.Volume > _sonarManager.GetVolume(Device.Master, (Channel)eventArgs.Channel!)) && eventArgs.Device != Device.Mic)
             {
-                foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
+                foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
                 {
-                    _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", (int)(_sonarManager.GetVolume(device, channel) * 100f));
+                    if (eventArgs.Device == Device.Mic) continue;
+                    foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
+                    {
+                        var level = (int)(_sonarManager.GetVolume(device, channel) * 100f);
+                        if (_connectorsLevelStreamer[(int) device][(int) channel] == level) continue;
+                        _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", level);
+                        _connectorsLevelStreamer[(int) device][(int) channel] = level;
+                    }
                 }
+            }
+            else
+            {
+                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={eventArgs.Channel.ToString()}|device={eventArgs.Device.ToString()}", (int)(eventArgs.Volume * 100f));
+                _connectorsLevelStreamer[(int) eventArgs.Device][(int) eventArgs.Channel!] = (int)(eventArgs.Volume * 100f);
             }
         }
     }
