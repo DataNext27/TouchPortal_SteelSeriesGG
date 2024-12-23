@@ -29,8 +29,24 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.StartListener();
         _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
+        
+        Initialize();
     }
 
+    void Initialize()
+    {
+        // Initialize sliders
+        foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
+        {
+            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", (int)(_sonarManager.GetVolume(device) * 100f));
+            foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
+            {
+                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", (int)(_sonarManager.GetVolume(device, channel) * 100f));
+            }
+        }
+        _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((_sonarManager.GetChatMixBalance() * 100f)+1)*50));
+    }
+    
     public void OnClosedEvent(string message)
     {
         _sonarManager.StopListener();
