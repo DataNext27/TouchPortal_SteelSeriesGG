@@ -2,6 +2,8 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases)
 [![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest)
 [![Ko-fi](https://img.shields.io/badge/Support_me_on-Ko--fi-FF6433?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/M4M2VL6WW)  
+> As for the v2 Complete Rework Update, you will probably need to recreate all of your buttons/sliders. I'm already sorry about it 😓. 
+
 This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
 ⚠️ This plugin allows you to control Sonar and only Sonar for the moment! </br>
 ⚠️ May not be supported on Linux and Mac
