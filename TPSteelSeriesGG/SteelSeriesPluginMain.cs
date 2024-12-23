@@ -27,6 +27,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.Connect();
         
         _sonarManager.StartListener();
+        _sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
         
@@ -105,6 +106,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
     }
 
+    void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
+    {
+        Initialize();
+    }
+    
     void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
     {
         if (eventArgs.Mode == Mode.Classic)
