@@ -348,6 +348,37 @@
               ]
             }
           ]
+        },
+        {
+          "id": "tp_steelseries_route_active_process",
+          "name": "Route Active Window",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Route active window audio to {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
         }
       ],
       "connectors": [
