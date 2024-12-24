@@ -114,7 +114,7 @@
                 "language": "default",
                 "data": [
                   {
-                    "lineFormat": "{$action$} {$channel$} {$device$}"
+                    "lineFormat": "{$action$} {$channel$} channel of {$device$}"
                   }
                 ]
               }
@@ -191,6 +191,57 @@
               "type": "choice",
               "default": "",
               "valueChoices": [ ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_redirections_states",
+          "name": "Toggle Redirections States",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$channel$} redirection state of {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Enable",
+                "Disable"
+              ]
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "default": "Monitoring",
+              "valueChoices": [
+                "Monitoring",
+                "Stream"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
             }
           ]
         },
