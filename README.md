@@ -40,7 +40,7 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
  - Change Redirections Devices
  - Toggle Redirections States
  - Toggle Audience Monitoring
- - Route current window audio to chosen device
+ - Route active window audio to chosen device
 
 ### Sliders
  - Change Volume
