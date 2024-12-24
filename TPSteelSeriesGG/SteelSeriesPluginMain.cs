@@ -73,21 +73,31 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (_sonarManager.GetMode() == Mode.Classic) _sonarManager.SetMode(Mode.Streamer);
                 else _sonarManager.SetMode(Mode.Classic);
                 break;
+            
             case "tp_steelseries-gg_set_mode":
                 _sonarManager.SetMode((Mode)Enum.Parse(typeof(Mode), message["mode"], true));
                 break;
+            
             case "tp_steelseries-gg_set_classic_mute":
                 if (message["action"] == "Toggle") _sonarManager.SetMute(!_sonarManager.GetMute((Device)Enum.Parse(typeof(Device), message["device"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else if (message["action"] == "Mute") _sonarManager.SetMute(true, (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else _sonarManager.SetMute(false, (Device)Enum.Parse(typeof(Device), message["device"], true));
                 break;
+            
             case "tp_steelseries-gg_set_streamer_mute":
                 if (message["action"] == "Toggle") _sonarManager.SetMute(!_sonarManager.GetMute((Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else if (message["action"] == "Mute") _sonarManager.SetMute(true, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else _sonarManager.SetMute(false, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 break;
+            
             case "tp_steelseries-gg_set_config":
                 _sonarManager.SetConfig((Device)Enum.Parse(typeof(Device), message["device"], true), message["config"]);
+                break;
+            
+            case "tp_steelseries-gg_set_audience_monitoring":
+                if (message["action"] == "Toggle") _sonarManager.SetAudienceMonitoringState(!_sonarManager.GetAudienceMonitoringState());
+                else if (message["action"] == "Enable") _sonarManager.SetAudienceMonitoringState(true);
+                else _sonarManager.SetAudienceMonitoringState(false);
                 break;
         }
     }

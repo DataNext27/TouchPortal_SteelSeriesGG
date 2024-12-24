@@ -193,6 +193,36 @@
               "valueChoices": [ ]
             }
           ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_audience_monitoring",
+          "name": "Toggle Audience Monitoring",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} audience monitoring"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Enable",
+                "Disable"
+              ]
+            }
+          ]
         }
       ],
       "connectors": [
