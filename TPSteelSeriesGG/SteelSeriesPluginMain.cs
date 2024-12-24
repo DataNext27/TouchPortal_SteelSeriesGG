@@ -1,5 +1,7 @@
-﻿using SteelSeriesAPI;
+﻿using System.Runtime.InteropServices;
+using SteelSeriesAPI;
 using SteelSeriesAPI.Events;
+using SteelSeriesAPI.Sonar;
 using SteelSeriesAPI.Sonar.Enums;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
@@ -20,6 +22,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     private int[] _connectorsLevel = [-1, -1, -1, -1, -1, -1];
     private int[][] _connectorsLevelStreamer = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]];
 
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+    
     public SteelSeriesPluginMain()
     {
         _client = TouchPortalFactory.CreateClient(this);
@@ -30,6 +38,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         _client.Connect();
         _sonarManager.WaitUntilSonarStarted();
+        Console.WriteLine(new SonarRetriever().WebServerAddress());
         
         _sonarManager.StartListener();
         _sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
@@ -113,6 +122,14 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (message["action"] == "Toggle") _sonarManager.SetAudienceMonitoringState(!_sonarManager.GetAudienceMonitoringState());
                 else if (message["action"] == "Enable") _sonarManager.SetAudienceMonitoringState(true);
                 else _sonarManager.SetAudienceMonitoringState(false);
+                break;
+            
+            case "tp_steelseries_route_active_process":
+                IntPtr hwnd = GetForegroundWindow();
+                uint activeProcessId;
+                GetWindowThreadProcessId(hwnd, out activeProcessId);
+                _sonarManager.SetProcessToDeviceRouting((int)activeProcessId,(Device)Enum.Parse(typeof(Device), message["device"], true));
+                Console.WriteLine((int)activeProcessId); //Doesn't give the good pid
                 break;
         }
     }
