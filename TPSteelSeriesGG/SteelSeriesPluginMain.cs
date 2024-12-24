@@ -1,4 +1,6 @@
 ﻿using System.Runtime.InteropServices;
+using System.Diagnostics;
+using NAudio.CoreAudioApi;
 using SteelSeriesAPI;
 using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar;
@@ -125,11 +127,33 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 break;
             
             case "tp_steelseries_route_active_process":
-                IntPtr hwnd = GetForegroundWindow();
-                uint activeProcessId;
-                GetWindowThreadProcessId(hwnd, out activeProcessId);
-                _sonarManager.SetProcessToDeviceRouting((int)activeProcessId,(Device)Enum.Parse(typeof(Device), message["device"], true));
-                Console.WriteLine((int)activeProcessId); //Doesn't give the good pid
+                // Get active window
+                IntPtr hWnd = GetForegroundWindow();
+                if (hWnd == IntPtr.Zero) return;
+                GetWindowThreadProcessId(hWnd, out uint activeWindowProcessId);
+                if (activeWindowProcessId == 0) return;
+                Console.WriteLine($"Active window process ID: {activeWindowProcessId}");
+
+                // Get all processes associated with the same executable
+                var processName = Process.GetProcessById((int)activeWindowProcessId).ProcessName;
+                var relatedProcesses = Process.GetProcessesByName(processName).Select(p => p.Id).ToList();
+                if (relatedProcesses.Count == 0) return;
+
+                // Enumerate audio sessions
+                var deviceEnumerator = new MMDeviceEnumerator();
+                var defaultDevice = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+                var sessions = defaultDevice.AudioSessionManager.Sessions;
+                for (int i = 0; i < sessions.Count; i++)
+                {
+                    var session = sessions[i];
+                    uint sessionProcessId = session.GetProcessID;
+
+                    if (relatedProcesses.Contains((int)sessionProcessId))
+                    {
+                        Console.WriteLine($"Routed pID {sessionProcessId} to {message["device"]}.");
+                        _sonarManager.SetProcessToDeviceRouting((int)sessionProcessId,(Device)Enum.Parse(typeof(Device), message["device"], true));
+                    }
+                }
                 break;
         }
     }
