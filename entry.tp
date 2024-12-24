@@ -358,7 +358,7 @@
                 "language": "default",
                 "data": [
                   {
-                    "lineFormat": "Route active window audio to {$device$}"
+                    "lineFormat": "[Experimental] Route active window audio to {$device$}"
                   }
                 ]
               }
