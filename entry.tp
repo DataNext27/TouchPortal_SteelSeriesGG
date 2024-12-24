@@ -62,6 +62,102 @@
           ]
         },
         {
+          "id": "tp_steelseries-gg_set_classic_mute",
+          "name": "Toggle mute",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Mute",
+                "Unmute"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_streamer_mute",
+          "name": "Toggle mute",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$channel$} {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Mute",
+                "Unmute"
+              ]
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "choice",
+              "default": "Monitoring",
+              "valueChoices": [
+                "Monitoring",
+                "Stream"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
           "id": "tp_steelseries-gg_set_config",
           "name": "Change device config",
           "lines": {
