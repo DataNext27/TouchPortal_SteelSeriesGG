@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System.Diagnostics;
-using NAudio.CoreAudioApi;
 using SteelSeriesAPI;
 using SteelSeriesAPI.Events;
 using SteelSeriesAPI.Sonar;
@@ -8,15 +7,19 @@ using SteelSeriesAPI.Sonar.Enums;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
+using TouchPortalSDK.Messages.Models;
+
+using Octokit;
+using NAudio.CoreAudioApi;
 
 namespace TPSteelSeriesGG;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
+    private readonly string _version = "2.0.0";
     public string PluginId => "steelseries-gg";
 
     private readonly ITouchPortalClient _client;
-
     private readonly SonarBridge _sonarManager;
     
     // Keep track of connectors level
@@ -36,9 +39,10 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager = new SonarBridge();
     }
 
-    public void Run()
+    public async void Run()
     {
         _client.Connect();
+        await CheckNewerVersion();
         _sonarManager.WaitUntilSonarStarted();
         Console.WriteLine(new SonarRetriever().WebServerAddress());
         
@@ -271,5 +275,51 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     void OnChatMixChangeHandler(object? sender, SonarChatMixEvent eventArgs)
     {
         _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f)+1)*50));
+    }
+
+    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
+    {
+        if (message.OptionId == "tp_steelseries-gg_new_update_dl")
+        {
+            Console.WriteLine("Opening: https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest");
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest",
+                UseShellExecute = true
+            });
+        }
+    }
+
+    async Task CheckNewerVersion()
+    {
+        var client = new GitHubClient(new ProductHeaderValue("DataNext27"));
+        Release latestRelease = await client.Repository.Release.GetLatest("DataNext27", "TouchPortal_SteelSeriesGG");
+        Version latestVersion = new Version(latestRelease.TagName);
+        Version currentVersion = new Version(_version);
+        
+        int versionCompare = latestVersion.CompareTo(currentVersion);
+        if (versionCompare > 0)
+        {
+            Console.WriteLine("A new update is available!");
+            // Send notification
+            _client.ShowNotification(
+                "tp_steelseries-gg_new_update_" + latestVersion + "_" + DateTime.Now.ToString("yyyyMMddHHmmss"),
+                "SteelSeries GG Plugin New Update Available",
+                "Current Installed version: " + currentVersion + 
+                "\nNew version: " + latestVersion + 
+                "\n\nPlease update to get new features and bug fixes!",
+                new[]
+                {
+                    new NotificationOptions() {Id = "tp_steelseries-gg_new_update_dl", Title = "Go To Download Location"}
+                });
+        }
+        else if (versionCompare < 0)
+        {
+            Console.WriteLine("You are using a pre-release version!");
+        }
+        else
+        {
+            Console.WriteLine("Up to date!");
+        }
     }
 }
