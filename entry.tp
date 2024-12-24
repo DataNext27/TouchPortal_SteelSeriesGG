@@ -177,7 +177,7 @@
             {
               "id": "device",
               "type": "choice",
-              "default": "Game",
+              "default": "Choose a device",
               "valueChoices": [
                 "Game",
                 "Chat",
@@ -188,6 +188,80 @@
             },
             {
               "id": "config",
+              "type": "choice",
+              "default": "",
+              "valueChoices": [ ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_classic_redirections_devices",
+          "name": "Change Redirection Device",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Define {$device$} redirection device to {$redirectionDevice$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "device",
+              "type": "choice",
+              "default": "Choose a device",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "redirectionDevice",
+              "type": "choice",
+              "default": "",
+              "valueChoices": [ ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_streamer_redirections_devices",
+          "name": "Change Redirection Device",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Define {$device-channel$} redirection device to {$redirectionDevice$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "type": "communicate",
+          "data": [
+            {
+              "id": "device-channel",
+              "type": "choice",
+              "default": "Choose a device",
+              "valueChoices": [
+                "Monitoring",
+                "Stream",
+                "Mic"
+              ]
+            },
+            {
+              "id": "redirectionDevice",
               "type": "choice",
               "default": "",
               "valueChoices": [ ]
