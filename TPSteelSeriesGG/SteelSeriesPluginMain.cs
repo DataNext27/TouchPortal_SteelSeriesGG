@@ -222,6 +222,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
     }
 
+    public void OnBroadcastEvent(BroadcastEvent message)
+    {
+        InitializeConnectors();
+    }
+
     void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
     {
         InitializeConnectors();
