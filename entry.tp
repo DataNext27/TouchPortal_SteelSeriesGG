@@ -8,7 +8,7 @@
     "colorLight": "#272F37",
     "parentCategory": "audio"
   },
-  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\TPSteelSeriesGG.exe",
+  "plugin_start_cmd": "Powershell Start-Process %TP_PLUGIN_FOLDER%TPSteelSeriesGG\\TPSteelSeriesGG.exe -WindowStyle hidden -Verb RunAs",
   "categories": [
     {
       "id": "sonar",
