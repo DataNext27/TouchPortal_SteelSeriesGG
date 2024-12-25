@@ -229,6 +229,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     
     void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
     {
+        // Update Connectors
         if (eventArgs.Mode == Mode.Classic)
         {
             if ((eventArgs.Device == Device.Master || eventArgs.Volume > _sonarManager.GetVolume(Device.Master)) && eventArgs.Device != Device.Mic)
