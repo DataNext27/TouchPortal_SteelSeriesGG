@@ -1,5 +1,10 @@
 TPSteelSeriesGG/bin/
 TPSteelSeriesGG/obj/
+TPSteelSeriesGGCore/bin/
+TPSteelSeriesGGCore/obj/
+bin/
+obj/
+
 *.tpp
 .idea/
 *.psd

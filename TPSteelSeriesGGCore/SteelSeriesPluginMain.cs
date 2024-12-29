@@ -12,7 +12,7 @@ using TouchPortalSDK.Messages.Models;
 using Octokit;
 using NAudio.CoreAudioApi;
 
-namespace TPSteelSeriesGG;
+namespace TPSteelSeriesGGCore;
 
 public class SteelSeriesPluginMain : ITouchPortalEventHandler
 {
