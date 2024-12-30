@@ -10,6 +10,14 @@
         <RollForward>LatestMajor</RollForward>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>$(SolutionDir)\bin\Debug</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>$(SolutionDir)\bin\Release\</OutputPath>
+    </PropertyGroup>
+
     <ItemGroup>
         <Content Include="..\entry.tp">
             <Pack>True</Pack>

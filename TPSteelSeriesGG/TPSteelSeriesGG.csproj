@@ -7,8 +7,20 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>$(SolutionDir)\bin\Debug</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>$(SolutionDir)\bin\Release\</OutputPath>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="TouchPortal-CS-API" Version="1.47.1" />
     </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="MOVE /Y $(OutDir)* $(OutDir)TPSteelSeriesGG" />
+    </Target>
 
 </Project>
