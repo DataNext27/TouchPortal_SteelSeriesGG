@@ -5,6 +5,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <ApplicationIcon>..\icon-24.ico</ApplicationIcon>
+        <RollForward>LatestMajor</RollForward>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -20,7 +22,7 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="MOVE /Y $(OutDir)* $(OutDir)TPSteelSeriesGG" />
+        <Exec Command="mkdir $(OutDir)TPSteelSeriesGG&#xD;&#xA;MOVE /Y $(OutDir)* $(OutDir)TPSteelSeriesGG" />
     </Target>
 
 </Project>
