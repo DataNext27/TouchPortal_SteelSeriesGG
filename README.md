@@ -93,6 +93,16 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
   
 ## ChangeLog
 ```
+v2.0.0
+  - Complete rewrite of the plugin
+  - Added routing support
+  - Logs are now available in the Logs tab
+  - Prevent plugin from starting before Sonar is started
+  - Reorganized all the menus
+  - Added Events
+  - Added different language support
+  - New Sonar template page available (Release tab) ?
+  - Bug fixes asked by the community
 v1.2.2
   - Added support for latest .NET version (Roll Forward)
 v1.2.1
