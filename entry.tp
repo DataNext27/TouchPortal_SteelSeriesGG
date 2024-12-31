@@ -451,6 +451,150 @@
           "default": "",
           "parentGroup": "",
           "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_master",
+          "type": "choice",
+          "desc": "Master",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_game",
+          "type": "choice",
+          "desc": "Game",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_chat",
+          "type": "choice",
+          "desc": "Chat",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_media",
+          "type": "choice",
+          "desc": "Media",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_aux",
+          "type": "choice",
+          "desc": "Aux",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_mic",
+          "type": "choice",
+          "desc": "Mic",
+          "default": "",
+          "parentGroup": "Classic Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_master",
+          "type": "choice",
+          "desc": "Master",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_game",
+          "type": "choice",
+          "desc": "Game",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_chat",
+          "type": "choice",
+          "desc": "Chat",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_media",
+          "type": "choice",
+          "desc": "Media",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_aux",
+          "type": "choice",
+          "desc": "Aux",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_monitoring_mic",
+          "type": "choice",
+          "desc": "Mic",
+          "default": "",
+          "parentGroup": "Monitoring Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_master",
+          "type": "choice",
+          "desc": "Master",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_game",
+          "type": "choice",
+          "desc": "Game",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_chat",
+          "type": "choice",
+          "desc": "Chat",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_media",
+          "type": "choice",
+          "desc": "Media",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_aux",
+          "type": "choice",
+          "desc": "Aux",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_mic",
+          "type": "choice",
+          "desc": "Mic",
+          "default": "",
+          "parentGroup": "Stream Volume",
+          "valueChoices": [ ]
         }
       ],
       "events": [ ],
