@@ -1,6 +1,7 @@
 # SteelSeries GG Plugin for Touch Portal
 [![GitHub Downloads](https://img.shields.io/github/downloads/DataNext27/TouchPortal_SteelSeriesGG/total?style=for-the-badge&color=6fca00)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases)
 [![GitHub Version](https://img.shields.io/github/v/tag/DataNext27/TouchPortal_SteelSeriesGG?style=for-the-badge&label=Version)](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest)
+[![.NET Version](https://img.shields.io/badge/.NET-8.0-512cd4?style=for-the-badge)](https://dotnet.microsoft.com/fr-fr/download/dotnet/8.0)
 [![Ko-fi](https://img.shields.io/badge/Support_me_on-Ko--fi-FF6433?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/M4M2VL6WW)  
 > As for the v2 Complete Rework Update, you will probably need to recreate all of your buttons/sliders. I'm already sorry about it 😓. 
 
