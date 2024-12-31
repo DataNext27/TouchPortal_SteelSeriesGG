@@ -443,7 +443,16 @@
           "data": []
         }
       ],
-      "states": [ ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_mode",
+          "type": "choice",
+          "desc": "Current Mode",
+          "default": "",
+          "parentGroup": "",
+          "valueChoices": [ ]
+        }
+      ],
       "events": [ ],
       "subCategories": [
         {

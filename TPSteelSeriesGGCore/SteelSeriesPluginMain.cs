@@ -63,7 +63,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
-        
+
+        InitializeStates();
         InitializeConnectors();
         Log("Initialized!");
     }
@@ -86,6 +87,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
         
         _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((_sonarManager.GetChatMixBalance() * 100f)+1)*50));
+    }
+
+    void InitializeStates()
+    {
+        _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
     }
     
     public void OnClosedEvent(string message)
@@ -253,7 +259,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
     {
+        Log("Mode changed.");
         InitializeConnectors();
+        _client.StateUpdate("tp_steelseries-gg_state_mode", eventArgs.NewMode.ToString());
     }
     
     void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
