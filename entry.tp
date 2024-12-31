@@ -599,16 +599,142 @@
           "default": "",
           "parentGroup": "Stream"
         }
-      ],
+      ]
+    },
+    {
+      "id": "tp_steelseries-gg_Mute",
+      "name": "Sonar Mute States",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [ ],
+      "connectors": [ ],
       "events": [ ],
-      "subCategories": [
+      "subCategories": [ ],
+      "states": [
         {
-          "id": "tp_steelseries-gg_sonar.classic",
-          "name": "Classic Mode"
+          "id": "tp_steelseries-gg_state_mute_master",
+          "type": "text",
+          "desc": "Classic - Master",
+          "default": "",
+          "parentGroup": "Classic"
         },
         {
-          "id": "tp_steelseries-gg_sonar.streamer",
-          "name": "Streamer Mode"
+          "id": "tp_steelseries-gg_state_mute_game",
+          "type": "text",
+          "desc": "Classic - Game",
+          "default": "",
+          "parentGroup": "Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_chat",
+          "type": "text",
+          "desc": "Classic - Chat",
+          "default": "",
+          "parentGroup": "Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_media",
+          "type": "text",
+          "desc": "Classic - Media",
+          "default": "",
+          "parentGroup": "Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_aux",
+          "type": "text",
+          "desc": "Classic - Aux",
+          "default": "",
+          "parentGroup": "Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_mic",
+          "type": "text",
+          "desc": "Classic - Mic",
+          "default": "",
+          "parentGroup": "Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_master",
+          "type": "text",
+          "desc": "Monitoring - Master",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_game",
+          "type": "text",
+          "desc": "Monitoring - Game",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_chat",
+          "type": "text",
+          "desc": "Monitoring - Chat",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_media",
+          "type": "text",
+          "desc": "Monitoring - Media",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_aux",
+          "type": "text",
+          "desc": "Monitoring - Aux",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_monitoring_mic",
+          "type": "text",
+          "desc": "Monitoring - Mic",
+          "default": "",
+          "parentGroup": "Monitoring"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_master",
+          "type": "text",
+          "desc": "Stream - Master",
+          "default": "",
+          "parentGroup": "Stream"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_game",
+          "type": "text",
+          "desc": "Stream - Game",
+          "default": "",
+          "parentGroup": "Stream"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_chat",
+          "type": "text",
+          "desc": "Stream - Chat",
+          "default": "",
+          "parentGroup": "Stream"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_media",
+          "type": "text",
+          "desc": "Stream - Media",
+          "default": "",
+          "parentGroup": "Stream"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_aux",
+          "type": "text",
+          "desc": "Stream - Aux",
+          "default": "",
+          "parentGroup": "Stream"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_mic",
+          "type": "text",
+          "desc": "Stream - Mic",
+          "default": "",
+          "parentGroup": "Stream"
         }
       ]
     }

@@ -63,6 +63,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.SonarEventManager.OnSonarModeChange += OnModeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
+        _sonarManager.SonarEventManager.OnSonarMuteChange += OnMuteChangeHandler;
 
         InitializeConnectors();
         InitializeStates();
@@ -95,9 +96,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
         {
             _client.StateUpdate($"tp_steelseries-gg_state_volume_{device.ToString().ToLower()}", _connectorsLevel[(int) device].ToString());
+            _client.StateUpdate($"tp_steelseries-gg_state_mute_{device.ToString().ToLower()}", _sonarManager.GetMute(device) ? "Muted" : "Unmuted");
+            
             foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
             {
                 _client.StateUpdate($"tp_steelseries-gg_state_volume_{channel.ToString().ToLower()}_{device.ToString().ToLower()}", _connectorsLevelStreamer[(int) device][(int) channel].ToString());
+                _client.StateUpdate($"tp_steelseries-gg_state_mute_{channel.ToString().ToLower()}_{device.ToString().ToLower()}", _sonarManager.GetMute(device, channel) ? "Muted" : "Unmuted");
             }
         }
     }
@@ -329,6 +333,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log("ChatMix balance changed, updating connectors...");
         _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f)+1)*50));
+    }
+
+    void OnMuteChangeHandler(object? sender, SonarMuteEvent eventArgs)
+    {
+        Log((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
+        _client.StateUpdate($"tp_steelseries-gg_state_mute_{eventArgs.Device.ToString().ToLower()}", eventArgs.Muted ? "Muted" : "Unmuted");
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
