@@ -131,7 +131,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (message["action"] == "Toggle") _sonarManager.SetMute(!_sonarManager.GetMute((Device)Enum.Parse(typeof(Device), message["device"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else if (message["action"] == "Mute") _sonarManager.SetMute(true, (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else _sonarManager.SetMute(false, (Device)Enum.Parse(typeof(Device), message["device"], true));
-                Log(message["action"]+"d classic mute on " + message["device"]);
                 break;
             
             case "tp_steelseries-gg_set_streamer_mute":
