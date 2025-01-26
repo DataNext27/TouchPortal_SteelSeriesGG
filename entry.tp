@@ -737,6 +737,52 @@
           "parentGroup": "Stream"
         }
       ]
+    },
+    {
+      "id": "tp_steelseries-gg_Configs",
+      "name": "Sonar Configs States",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [ ],
+      "connectors": [ ],
+      "events": [ ],
+      "subCategories": [ ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_config_game",
+          "type": "text",
+          "desc": "Game",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_chat",
+          "type": "text",
+          "desc": "Chat",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_media",
+          "type": "text",
+          "desc": "Media",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_aux",
+          "type": "text",
+          "desc": "Aux",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_mic",
+          "type": "text",
+          "desc": "Mic",
+          "default": "",
+          "parentGroup": ""
+        }
+      ]
     }
   ],
   "settings": [ ]

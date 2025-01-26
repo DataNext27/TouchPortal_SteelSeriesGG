@@ -64,6 +64,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.SonarEventManager.OnSonarVolumeChange += OnVolumeChangeHandler;
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
         _sonarManager.SonarEventManager.OnSonarMuteChange += OnMuteChangeHandler;
+        _sonarManager.SonarEventManager.OnSonarConfigChange += OnConfigChangeHandler;
 
         InitializeConnectors();
         InitializeStates();
@@ -97,6 +98,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             _client.StateUpdate($"tp_steelseries-gg_state_volume_{device.ToString().ToLower()}", _connectorsLevel[(int) device].ToString());
             _client.StateUpdate($"tp_steelseries-gg_state_mute_{device.ToString().ToLower()}", _sonarManager.GetMute(device) ? "Muted" : "Unmuted");
+
+            if (device != Device.Master)
+            {
+                _client.StateUpdate($"tp_steelseries-gg_state_config_{device.ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(device).Name);
+            }
             
             foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
             {
@@ -338,6 +344,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
         _client.StateUpdate($"tp_steelseries-gg_state_mute_{eventArgs.Device.ToString().ToLower()}", eventArgs.Muted ? "Muted" : "Unmuted");
+    }
+
+    void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)
+    {
+        Log("Changed " + _sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId) + " config to " + _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
+        _client.StateUpdate($"tp_steelseries-gg_state_config_{_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId).ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
