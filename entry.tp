@@ -783,6 +783,31 @@
           "parentGroup": ""
         }
       ]
+    },
+    {
+      "id": "tp_steelseries-gg_ChatMix",
+      "name": "Sonar ChatMix States",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [ ],
+      "connectors": [ ],
+      "events": [ ],
+      "subCategories": [ ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_chatmix_state",
+          "type": "text",
+          "desc": "State",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_chatmix_balance",
+          "type": "text",
+          "desc": "Balance",
+          "default": "",
+          "parentGroup": ""
+        }
+      ]
     }
   ],
   "settings": [ ]

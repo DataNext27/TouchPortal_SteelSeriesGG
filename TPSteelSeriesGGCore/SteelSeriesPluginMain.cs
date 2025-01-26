@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
@@ -65,6 +66,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.SonarEventManager.OnSonarChatMixChange += OnChatMixChangeHandler;
         _sonarManager.SonarEventManager.OnSonarMuteChange += OnMuteChangeHandler;
         _sonarManager.SonarEventManager.OnSonarConfigChange += OnConfigChangeHandler;
+        _sonarManager.SonarEventManager.OnSonarRedirectionDeviceChange += OnRedirectionDeviceChangeHandler;
 
         InitializeConnectors();
         InitializeStates();
@@ -94,6 +96,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     void InitializeStates()
     {
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
+        _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
+        _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", _sonarManager.GetChatMixBalance().ToString(CultureInfo.InvariantCulture));
         foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
         {
             _client.StateUpdate($"tp_steelseries-gg_state_volume_{device.ToString().ToLower()}", _connectorsLevel[(int) device].ToString());
@@ -336,8 +340,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnChatMixChangeHandler(object? sender, SonarChatMixEvent eventArgs)
     {
-        Log("ChatMix balance changed, updating connectors...");
+        Log("ChatMix balance changed");
         _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f)+1)*50));
+        _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", eventArgs.Balance.ToString(CultureInfo.InvariantCulture));
     }
 
     void OnMuteChangeHandler(object? sender, SonarMuteEvent eventArgs)
@@ -350,6 +355,13 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log("Changed " + _sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId) + " config to " + _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
         _client.StateUpdate($"tp_steelseries-gg_state_config_{_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId).ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
+    }
+
+    void OnRedirectionDeviceChangeHandler(object? sender, SonarRedirectionDeviceEvent eventArgs)
+    {
+        Log(eventArgs.Device + " " + eventArgs.Channel +" Redirection device changed");
+        Thread.Sleep(100);
+        _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
