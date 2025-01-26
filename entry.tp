@@ -450,6 +450,13 @@
           "desc": "Current Mode",
           "default": "",
           "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_audience_monitoring",
+          "type": "text",
+          "desc": "Audience Monitoring State",
+          "default": "",
+          "parentGroup": ""
         }
       ],
       "events": [ ],
@@ -740,7 +747,7 @@
     },
     {
       "id": "tp_steelseries-gg_Configs",
-      "name": "Sonar Configs States",
+      "name": "Sonar Configs",
       "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
       "actions": [ ],
       "connectors": [ ],
@@ -807,6 +814,147 @@
           "default": "",
           "parentGroup": ""
         }
+      ]
+    },
+    {
+      "id": "tp_steelseries-gg_Redirection_Devices",
+      "name": "Sonar Redirection Devices",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [ ],
+      "connectors": [ ],
+      "events": [ ],
+      "subCategories": [ ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_game",
+          "type": "text",
+          "desc": "Game",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_chat",
+          "type": "text",
+          "desc": "Chat",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_media",
+          "type": "text",
+          "desc": "Media",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_aux",
+          "type": "text",
+          "desc": "Aux",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_mic",
+          "type": "text",
+          "desc": "Mic",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_monitoring",
+          "type": "text",
+          "desc": "Monitoring",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_device_stream",
+          "type": "text",
+          "desc": "Stream",
+          "default": "",
+          "parentGroup": ""
+        }
+      ]
+    },
+    {
+      "id": "tp_steelseries-gg_Redirection_States",
+      "name": "Sonar Redirection States",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\icon-24.png",
+      "actions": [ ],
+      "connectors": [ ],
+      "events": [ ],
+      "subCategories": [ ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_monitoring_game",
+          "type": "text",
+          "desc": "Monitoring - Game",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_monitoring_chat",
+          "type": "text",
+          "desc": "Monitoring - Chat",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_monitoring_media",
+          "type": "text",
+          "desc": "Monitoring - Media",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_monitoring_aux",
+          "type": "text",
+          "desc": "Monitoring - Aux",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_monitoring_mic",
+          "type": "text",
+          "desc": "Monitoring - Mic",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_stream_game",
+          "type": "text",
+          "desc": "Stream - Game",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_stream_chat",
+          "type": "text",
+          "desc": "Stream - Chat",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_stream_media",
+          "type": "text",
+          "desc": "Stream - Media",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_stream_aux",
+          "type": "text",
+          "desc": "Stream - Aux",
+          "default": "",
+          "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_redirection_state_stream_mic",
+          "type": "text",
+          "desc": "Stream - Mic",
+          "default": "",
+          "parentGroup": ""
+        } 
       ]
     }
   ],
