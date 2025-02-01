@@ -97,6 +97,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void InitializeStates()
     {
+        _client.RemoveState("tp_steelseries-gg_state_last_updated_volume");
+        _client.CreateState("tp_steelseries-gg_state_last_updated_volume", "Last Used Slider", "", "SteelSeries GG Sonar");
+        
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", _sonarManager.GetChatMixBalance().ToString(CultureInfo.InvariantCulture));
@@ -296,6 +299,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         Thread.Sleep(150);
         InitializeConnectors();
         InitializeStates();
+        _client.TriggerEvent("tp_steelseries-gg_event_on_mode");
     }
     
     void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
@@ -322,6 +326,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 _connectorsLevel[(int)eventArgs.Device] = (int)(eventArgs.Volume * 100f);
                 _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Device.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             }
+            _client.StateUpdate("tp_steelseries-gg_state_last_updated_volume", eventArgs.Device.ToString());
         }
         else
         {
@@ -347,6 +352,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 _connectorsLevelStreamer[(int) eventArgs.Device][(int) eventArgs.Channel!] = (int)(eventArgs.Volume * 100f);
                 _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Channel.ToString()!.ToLower()}_{eventArgs.Device.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             }
+            _client.StateUpdate("tp_steelseries-gg_state_last_updated_volume", $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}");
         }
     }
 
