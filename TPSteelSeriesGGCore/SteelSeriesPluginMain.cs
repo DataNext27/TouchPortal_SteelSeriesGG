@@ -101,6 +101,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.CreateState("tp_steelseries-gg_state_last_updated_volume", "Last Used Slider", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_mute");
         _client.CreateState("tp_steelseries-gg_state_last_updated_mute", "Last Muted Device", "", "SteelSeries GG Sonar");
+        _client.RemoveState("tp_steelseries-gg_state_last_updated_unmute");
+        _client.CreateState("tp_steelseries-gg_state_last_updated_unmute", "Last Unmuted Device", "", "SteelSeries GG Sonar");
 
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
@@ -369,7 +371,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
         _client.StateUpdate($"tp_steelseries-gg_state_mute_{(eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()!.ToLower()}_{eventArgs.Device.ToString().ToLower()}" : eventArgs.Device.ToString().ToLower())}", eventArgs.Muted ? "Muted" : "Unmuted");
-        _client.StateUpdate("tp_steelseries-gg_state_last_updated_mute", eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}" : eventArgs.Device.ToString());
+        _client.StateUpdate($"tp_steelseries-gg_state_last_updated_{(eventArgs.Muted ? "mute" : "unmute")}", eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}" : eventArgs.Device.ToString());
     }
 
     void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)

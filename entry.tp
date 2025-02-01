@@ -515,7 +515,7 @@
         {
           "id": "tp_steelseries-gg_event_on_mute_classic",
           "name": "On mute change",
-          "format": "When sonar $val mute state change",
+          "format": "When sonar $val gets muted",
           "type": "communicate",
           "valueType":"choice",
           "valueChoices": [
@@ -532,7 +532,7 @@
         {
           "id": "tp_steelseries-gg_event_on_mute_streamer",
           "name": "On mute change",
-          "format": "When sonar $val mute state change",
+          "format": "When sonar $val gets muted",
           "type": "communicate",
           "valueType":"choice",
           "valueChoices": [
@@ -550,6 +550,46 @@
             "Stream - Mic"
           ],
           "valueStateId": "tp_steelseries-gg_state_last_updated_mute",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_unmute_classic",
+          "name": "On unmute change",
+          "format": "When sonar $val gets unmuted",
+          "type": "communicate",
+          "valueType":"choice",
+          "valueChoices": [
+            "Master",
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_last_updated_unmute",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic"
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_unmute_streamer",
+          "name": "On unmute change",
+          "format": "When sonar $val gets unmuted",
+          "type": "communicate",
+          "valueType":"choice",
+          "valueChoices": [
+            "Monitoring - Master",
+            "Monitoring - Game",
+            "Monitoring - Chat",
+            "Monitoring - Media",
+            "Monitoring - Aux",
+            "Monitoring - Mic",
+            "Stream - Master",
+            "Stream - Game",
+            "Stream - Chat",
+            "Stream - Media",
+            "Stream - Aux",
+            "Stream - Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_last_updated_unmute",
           "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         }
       ],
