@@ -591,6 +591,21 @@
           ],
           "valueStateId": "tp_steelseries-gg_state_last_updated_unmute",
           "subCategoryId": "tp_steelseries-gg_sonar.streamer"
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_config",
+          "name": "On config change",
+          "format": "When $val config changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_last_updated_config"
         }
       ],
       "subCategories": [

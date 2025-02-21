@@ -15,6 +15,7 @@ using TouchPortalSDK.Messages.Models;
 
 using Octokit;
 using NAudio.CoreAudioApi;
+using SteelSeriesAPI.Sonar.Models;
 
 namespace TPSteelSeriesGGCore;
 
@@ -103,6 +104,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.CreateState("tp_steelseries-gg_state_last_updated_mute", "Last Muted Device", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_unmute");
         _client.CreateState("tp_steelseries-gg_state_last_updated_unmute", "Last Unmuted Device", "", "SteelSeries GG Sonar");
+        _client.RemoveState("tp_steelseries-gg_state_last_updated_config");
+        _client.CreateState("tp_steelseries-gg_state_last_updated_config", "Last Updated Config", "", "SteelSeries GG Sonar");
 
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
@@ -297,6 +300,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         InitializeConnectors();
     }
 
+    void TriggerEvent(string valueStateId, string value = "")
+    {
+        // In case the state value is the same, we remove it and re-add it
+        // to make sure the envent triggers
+        _client.StateUpdate(valueStateId, "");
+        Thread.Sleep(50);
+        _client.StateUpdate(valueStateId, value);
+    }
+
     void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
     {
         Log("Mode changed.");
@@ -330,7 +342,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 _connectorsLevel[(int)eventArgs.Device] = (int)(eventArgs.Volume * 100f);
                 _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Device.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             }
-            _client.StateUpdate("tp_steelseries-gg_state_last_updated_volume", eventArgs.Device.ToString());
+            TriggerEvent("tp_steelseries-gg_state_last_updated_volume", eventArgs.Device.ToString());
         }
         else
         {
@@ -356,7 +368,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 _connectorsLevelStreamer[(int) eventArgs.Device][(int) eventArgs.Channel!] = (int)(eventArgs.Volume * 100f);
                 _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Channel.ToString()!.ToLower()}_{eventArgs.Device.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             }
-            _client.StateUpdate("tp_steelseries-gg_state_last_updated_volume", $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}");
+            TriggerEvent("tp_steelseries-gg_state_last_updated_volume", $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}");
         }
     }
 
@@ -371,13 +383,15 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
         _client.StateUpdate($"tp_steelseries-gg_state_mute_{(eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()!.ToLower()}_{eventArgs.Device.ToString().ToLower()}" : eventArgs.Device.ToString().ToLower())}", eventArgs.Muted ? "Muted" : "Unmuted");
-        _client.StateUpdate($"tp_steelseries-gg_state_last_updated_{(eventArgs.Muted ? "mute" : "unmute")}", eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}" : eventArgs.Device.ToString());
+        TriggerEvent($"tp_steelseries-gg_state_last_updated_{(eventArgs.Muted ? "mute" : "unmute")}", eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}" : eventArgs.Device.ToString());
     }
 
     void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)
     {
-        Log("Changed " + _sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId) + " config to " + _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
-        _client.StateUpdate($"tp_steelseries-gg_state_config_{_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId).ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(_sonarManager.GetDeviceFromAudioConfigurationId(eventArgs.ConfigId)).Name);
+        SonarAudioConfiguration newConfig = _sonarManager.GetAudioConfiguration(eventArgs.ConfigId);
+        Log("Changed " + newConfig.AssociatedDevice + " config to " + _sonarManager.GetSelectedAudioConfiguration(newConfig.AssociatedDevice).Name);
+        _client.StateUpdate($"tp_steelseries-gg_state_config_{newConfig.AssociatedDevice.ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(newConfig.AssociatedDevice).Name);
+        TriggerEvent("tp_steelseries-gg_state_last_updated_config", newConfig.AssociatedDevice.ToString());
     }
 
     void OnRedirectionDeviceChangeHandler(object? sender, SonarRedirectionDeviceEvent eventArgs)
