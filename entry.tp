@@ -606,6 +606,15 @@
             "Mic"
           ],
           "valueStateId": "tp_steelseries-gg_state_last_updated_config"
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_chatmix_balance",
+          "name": "On ChatMix Balance change",
+          "format": "When ChatMix balance changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [ ],
+          "valueStateId": ""
         }
       ],
       "subCategories": [

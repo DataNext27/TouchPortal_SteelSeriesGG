@@ -98,6 +98,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void InitializeStates()
     {
+        // Events states
         _client.RemoveState("tp_steelseries-gg_state_last_updated_volume");
         _client.CreateState("tp_steelseries-gg_state_last_updated_volume", "Last Used Slider", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_mute");
@@ -372,11 +373,18 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
     }
 
+    bool _chatMixHadEvent = false;
     void OnChatMixChangeHandler(object? sender, SonarChatMixEvent eventArgs)
     {
-        Log("ChatMix balance changed");
-        _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f)+1)*50));
-        _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", eventArgs.Balance.ToString(CultureInfo.InvariantCulture));
+        if (!_chatMixHadEvent)
+        {
+            _chatMixHadEvent = true;
+            Log("ChatMix balance changed");
+            _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f) + 1) * 50));
+            _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", eventArgs.Balance.ToString(CultureInfo.InvariantCulture));
+            _client.TriggerEvent("tp_steelseries-gg_event_on_chatmix_balance");
+        }
+        else _chatMixHadEvent = false;
     }
 
     void OnMuteChangeHandler(object? sender, SonarMuteEvent eventArgs)
