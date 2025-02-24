@@ -615,6 +615,27 @@
           "valueType": "choice",
           "valueChoices": [ ],
           "valueStateId": ""
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_redirection_state",
+          "name": "On Redirection State change",
+          "format": "When $val Redirection State changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Monitoring - Game",
+            "Monitoring - Chat",
+            "Monitoring - Media",
+            "Monitoring - Aux",
+            "Monitoring - Mic",
+            "Stream - Game",
+            "Stream - Chat",
+            "Stream - Media",
+            "Stream - Aux",
+            "Stream - Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_last_updated_redirection_state",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         }
       ],
       "subCategories": [

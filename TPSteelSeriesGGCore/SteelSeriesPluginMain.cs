@@ -112,6 +112,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.CreateState("tp_steelseries-gg_state_last_updated_unmute", "Last Unmuted Device", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_config");
         _client.CreateState("tp_steelseries-gg_state_last_updated_config", "Last Updated Config", "", "SteelSeries GG Sonar");
+        _client.RemoveState("tp_steelseries-gg_state_last_updated_redirection_state");
+        _client.CreateState("tp_steelseries-gg_state_last_updated_redirection_state", "Last Updated Redirection State", "", "SteelSeries GG Sonar");
 
         // Display States
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
@@ -443,6 +445,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     {
         Log("Redirection State " + eventArgs.Device + ", " + eventArgs.Channel + " " + (eventArgs.State ? "Enabled" : "Disabled"));
         _client.StateUpdate($"tp_steelseries-gg_state_redirection_state_{eventArgs.Channel.ToString().ToLower()}_{eventArgs.Device.ToString().ToLower()}", eventArgs.State ? "Enabled" : "Disabled");
+        TriggerEvent("tp_steelseries-gg_state_last_updated_redirection_state", eventArgs.Channel + " - " + eventArgs.Device);
     }
 
     void OnAudienceMonitoringChangeHandler(object? sender, SonarAudienceMonitoringEvent eventArgs)
