@@ -146,6 +146,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         // Change Mic Redirection Device state depending on the mode
         if (_sonarManager.GetMode() == Mode.Classic)_client.StateUpdate("tp_steelseries-gg_state_redirection_device_mic", _sonarManager.GetClassicRedirectionDevice(Device.Mic).Name);
         else _client.StateUpdate("tp_steelseries-gg_state_redirection_device_mic", _sonarManager.GetStreamRedirectionDevice(Device.Mic).Name);
+        
+        // Audience Monitoring State to prevent multiple call from the event
+        _audienceMonitoringLastState = _sonarManager.GetAudienceMonitoringState();
     }
     
     public void OnClosedEvent(string message)
@@ -448,10 +451,17 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         TriggerEvent("tp_steelseries-gg_state_last_updated_redirection_state", eventArgs.Channel + " - " + eventArgs.Device);
     }
 
+    bool _audienceMonitoringLastState = false;
     void OnAudienceMonitoringChangeHandler(object? sender, SonarAudienceMonitoringEvent eventArgs)
     {
-        Log("Adience monitoring " + (eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled"));
-        _client.StateUpdate("tp_steelseries-gg_state_audience_monitoring", eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled");
+        if (_audienceMonitoringLastState != eventArgs.AudienceMonitoringState)
+        {
+            _audienceMonitoringLastState = eventArgs.AudienceMonitoringState;
+            Log("Adience monitoring " + (eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled"));
+            _client.StateUpdate("tp_steelseries-gg_state_audience_monitoring",
+                eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled");
+            _client.TriggerEvent("tp_steelseries-gg_event_on_audience_monitoring");
+        }
     }
 
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)

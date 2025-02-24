@@ -636,6 +636,16 @@
           ],
           "valueStateId": "tp_steelseries-gg_state_last_updated_redirection_state",
           "subCategoryId": "tp_steelseries-gg_sonar.streamer"
+        },
+        {
+          "id": "tp_steelseries-gg_event_on_audience_monitoring",
+          "name": "On Audience Monitoring change",
+          "format": "When Audience Monitoring state changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [ ],
+          "valueStateId": "",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         }
       ],
       "subCategories": [
