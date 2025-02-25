@@ -114,6 +114,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.CreateState("tp_steelseries-gg_state_last_updated_config", "Last Updated Config", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_redirection_state");
         _client.CreateState("tp_steelseries-gg_state_last_updated_redirection_state", "Last Updated Redirection State", "", "SteelSeries GG Sonar");
+        _client.RemoveState("tp_steelseries-gg_state_last_updated_redirection_device");
+        _client.CreateState("tp_steelseries-gg_state_last_updated_redirection_device", "Last Updated Redirection Device", "", "SteelSeries GG Sonar");
 
         // Display States
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.GetMode().ToString());
@@ -442,6 +444,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.StateUpdate($"tp_steelseries-gg_state_redirection_device_{eventArgs.Device.ToString().ToLower()}{eventArgs.Channel.ToString().ToLower()}", _sonarManager.GetRedirectionDeviceFromId(eventArgs.RedirectionDeviceId).Name);
         Thread.Sleep(100);
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
+        TriggerEvent("tp_steelseries-gg_state_last_updated_redirection_device", eventArgs.Device == Device.Mic ? eventArgs.Mode + " - Mic" : eventArgs.Channel.HasValue ? eventArgs.Channel.ToString() : eventArgs.Device.ToString());
     }
 
     void OnRedirectionStateChangeHandler(object? sender, SonarRedirectionStateEvent eventArgs)

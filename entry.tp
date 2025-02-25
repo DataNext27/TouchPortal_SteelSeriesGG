@@ -617,6 +617,24 @@
           "valueStateId": ""
         },
         {
+          "id": "tp_steelseries-gg_event_on_redirection_device",
+          "name": "On Redirection Device change",
+          "format": "When $val Redirection Device changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Classic - Mic",
+            "Monitoring",
+            "Stream",
+            "Streamer - Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_last_updated_redirection_device"
+        },
+        {
           "id": "tp_steelseries-gg_event_on_redirection_state",
           "name": "On Redirection State change",
           "format": "When $val Redirection State changes",
