@@ -26,7 +26,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     private readonly ITouchPortalClient _client;
     private NamedPipeClientStream _pipeClient;
-    private StreamWriter _writer;
+    public static StreamWriter pipeWriter;
     private readonly SonarBridge _sonarManager;
     
     // Keep track of connectors level
@@ -56,12 +56,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         Thread pipeMonitor = new Thread(PipeMonitoring);
         pipeMonitor.Start();
         _pipeClient.Connect();
-        _writer = new StreamWriter(_pipeClient) { AutoFlush = true };
+        pipeWriter = new StreamWriter(_pipeClient) { AutoFlush = true };
         
         // Check for new versions
         await CheckNewerVersion();
         _sonarManager.WaitUntilSonarStarted();
-        Log(new SonarRetriever().WebServerAddress());
+        Console.WriteLine(new SonarRetriever().WebServerAddress());
         
         // Listen for Sonar Events
         _sonarManager.StartListener();
@@ -76,7 +76,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
         InitializeConnectors();
         InitializeStates();
-        Log("Initialized!");
+        Console.WriteLine("Initialized!");
     }
 
     void InitializeConnectors()
@@ -156,7 +156,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     public void OnClosedEvent(string message)
     {
         // Exit the app on TP Close
-        _writer.Close();
+        pipeWriter.Close();
         _pipeClient.Close();
         _sonarManager.StopListener();
         Environment.Exit(0);
@@ -170,13 +170,13 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             case "tp_steelseries-gg_switch_mode":
                 if (_sonarManager.GetMode() == Mode.Classic) _sonarManager.SetMode(Mode.Streamer);
                 else _sonarManager.SetMode(Mode.Classic);
-                Log("Switched mode.");
+                Console.WriteLine("Switched mode.");
                 break;
             
             // Set Specific mode
             case "tp_steelseries-gg_set_mode":
                 _sonarManager.SetMode((Mode)Enum.Parse(typeof(Mode), message["mode"], true));
-                Log("Mode set to " + message["mode"]);
+                Console.WriteLine("Mode set to " + message["mode"]);
                 break;
             
             // Toggle/Mute/Unmute a classic device
@@ -184,7 +184,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (message["action"] == "Toggle") _sonarManager.SetMute(!_sonarManager.GetMute((Device)Enum.Parse(typeof(Device), message["device"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else if (message["action"] == "Mute") _sonarManager.SetMute(true, (Device)Enum.Parse(typeof(Device), message["device"], true));
                 else _sonarManager.SetMute(false, (Device)Enum.Parse(typeof(Device), message["device"], true));
-                Log(message["action"]+"d " + message["device"]);
+                Console.WriteLine(message["action"]+"d " + message["device"]);
                 break;
             
             // Toggle/Mute/Unmute a streamer device
@@ -192,26 +192,26 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (message["action"] == "Toggle") _sonarManager.SetMute(!_sonarManager.GetMute((Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else if (message["action"] == "Mute") _sonarManager.SetMute(true, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else _sonarManager.SetMute(false, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
-                Log(message["action"]+"d streamer mute on " + message["device"] + ", " + message["channel"]);
+                Console.WriteLine(message["action"]+"d streamer mute on " + message["device"] + ", " + message["channel"]);
                 break;
             
             // Change config of a Sonar device
             case "tp_steelseries-gg_set_config":
                 _sonarManager.SetConfig((Device)Enum.Parse(typeof(Device), message["device"], true), message["config"]);
-                Log("Changed " + message["device"] + " config to " + message["config"] );
+                Console.WriteLine("Changed " + message["device"] + " config to " + message["config"] );
                 break;
             
             // Change Redirection Device of a classic Sonar Device
             case "tp_steelseries-gg_set_classic_redirections_devices":
                 _sonarManager.SetClassicRedirectionDevice(message["device"] != "Mic" ? _sonarManager.GetRedirectionDevices(Direction.Output).First(device => device.Name == message["redirectionDevice"]).Id : _sonarManager.GetRedirectionDevices(Direction.Input).First(device => device.Name == message["redirectionDevice"]).Id, (Device)Enum.Parse(typeof(Device), message["device"], true));
-                Log("Changed " + message["device"] + " classic mode redirection device to " + message["redirectionDevice"] );
+                Console.WriteLine("Changed " + message["device"] + " classic mode redirection device to " + message["redirectionDevice"] );
                 break;
             
             // Change Redirection Device of a streamer Sonar Device/Channel
             case "tp_steelseries-gg_set_streamer_redirections_devices":
                 if(message["device-channel"] != "Mic") _sonarManager.SetStreamRedirectionDevice(_sonarManager.GetRedirectionDevices(Direction.Output).First(device => device.Name == message["redirectionDevice"]).Id, (Channel)Enum.Parse(typeof(Channel), message["device-channel"], true));
                 else _sonarManager.SetStreamRedirectionDevice(_sonarManager.GetRedirectionDevices(Direction.Input).First(device => device.Name == message["redirectionDevice"]).Id, (Device)Enum.Parse(typeof(Device), message["device-channel"], true));
-                Log("Changed " + message["device-channel"] + " streamer mode redirection device to " + message["redirectionDevice"] );
+                Console.WriteLine("Changed " + message["device-channel"] + " streamer mode redirection device to " + message["redirectionDevice"] );
                 break;
             
             // Toggle/Enable/Disable streamer redirection states
@@ -219,7 +219,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if(message["action"] == "Toggle") _sonarManager.SetRedirectionState(!_sonarManager.GetRedirectionState((Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true)), (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else if (message["action"] == "Enable") _sonarManager.SetRedirectionState(true, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
                 else _sonarManager.SetRedirectionState(false, (Device)Enum.Parse(typeof(Device), message["device"], true), (Channel)Enum.Parse(typeof(Channel), message["channel"], true));
-                Log(message["action"]+"d redirection state on " + message["device"] + ", " + message["channel"]);
+                Console.WriteLine(message["action"]+"d redirection state on " + message["device"] + ", " + message["channel"]);
                 break;
             
             // Toggle/Enable/Disable streamer Audience Monitoring
@@ -227,7 +227,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (message["action"] == "Toggle") _sonarManager.SetAudienceMonitoringState(!_sonarManager.GetAudienceMonitoringState());
                 else if (message["action"] == "Enable") _sonarManager.SetAudienceMonitoringState(true);
                 else _sonarManager.SetAudienceMonitoringState(false);
-                Log(message["action"] +"d audience monitoring");
+                Console.WriteLine(message["action"] +"d audience monitoring");
                 break;
             
             // Route current window audio to a specific Sonar Device
@@ -237,7 +237,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 if (hWnd == IntPtr.Zero) return;
                 GetWindowThreadProcessId(hWnd, out uint activeWindowProcessId);
                 if (activeWindowProcessId == 0) return;
-                Log($"Active window process ID: {activeWindowProcessId}");
+                Console.WriteLine($"Active window process ID: {activeWindowProcessId}");
 
                 // Get all processes associated with the same executable
                 var processName = Process.GetProcessById((int)activeWindowProcessId).ProcessName;
@@ -255,7 +255,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
                     if (relatedProcesses.Contains((int)sessionProcessId))
                     {
-                        Log($"Routed pID {sessionProcessId} to {message["device"]}.");
+                        Console.WriteLine($"Routed pID {sessionProcessId} to {message["device"]}.");
                         _sonarManager.SetProcessToDeviceRouting((int)sessionProcessId,(Device)Enum.Parse(typeof(Device), message["device"], true));
                     }
                 }
@@ -286,7 +286,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 {
                     Thread.Sleep(500); // Prevent error E3081
                     _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", 50);
-                    Log("Could not change ChatMix balance");
+                    Console.WriteLine("Could not change ChatMix balance");
                 }
                 break;
         }
@@ -348,7 +348,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnModeChangeHandler(object? sender, SonarModeEvent eventArgs)
     {
-        Log("Mode changed.");
+        Console.WriteLine("Mode changed.");
         Thread.Sleep(150);
         InitializeConnectors();
         InitializeStates();
@@ -360,7 +360,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         // Update Connectors
         if (eventArgs.Mode == Mode.Classic)
         {
-            Log(eventArgs.Device + " volume changed, updating connectors/sliders...");
+            Console.WriteLine(eventArgs.Device + " volume changed, updating connectors/sliders...");
             if ((eventArgs.Device == Device.Master || eventArgs.Volume > _sonarManager.GetVolume(Device.Master)) && eventArgs.Device != Device.Mic)
             {
                 foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
@@ -383,7 +383,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
         else
         {
-            Log(eventArgs.Device + ", " + eventArgs.Channel + " volume changed, updating connectors/sliders...");
+            Console.WriteLine(eventArgs.Device + ", " + eventArgs.Channel + " volume changed, updating connectors/sliders...");
             if ((eventArgs.Device == Device.Master || eventArgs.Volume > _sonarManager.GetVolume(Device.Master, (Channel)eventArgs.Channel!)) && eventArgs.Device != Device.Mic)
             {
                 foreach (var device in Enum.GetValues(typeof(Device)).Cast<Device>())
@@ -415,7 +415,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         if (!_chatMixHadEvent)
         {
             _chatMixHadEvent = true;
-            Log("ChatMix balance changed");
+            Console.WriteLine("ChatMix balance changed");
             _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f) + 1) * 50));
             _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", eventArgs.Balance.ToString(CultureInfo.InvariantCulture));
             _client.TriggerEvent("tp_steelseries-gg_event_on_chatmix_balance");
@@ -425,7 +425,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnMuteChangeHandler(object? sender, SonarMuteEvent eventArgs)
     {
-        Log((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
+        Console.WriteLine((eventArgs.Muted ? "Muted " : "Unmuted ") + eventArgs.Device + " " + eventArgs.Channel);
         _client.StateUpdate($"tp_steelseries-gg_state_mute_{(eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()!.ToLower()}_{eventArgs.Device.ToString().ToLower()}" : eventArgs.Device.ToString().ToLower())}", eventArgs.Muted ? "Muted" : "Unmuted");
         TriggerEvent($"tp_steelseries-gg_state_last_updated_{(eventArgs.Muted ? "mute" : "unmute")}", eventArgs.Channel.HasValue ? $"{eventArgs.Channel.ToString()} - {eventArgs.Device.ToString()}" : eventArgs.Device.ToString());
     }
@@ -433,14 +433,14 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)
     {
         SonarAudioConfiguration newConfig = _sonarManager.GetAudioConfiguration(eventArgs.ConfigId);
-        Log("Changed " + newConfig.AssociatedDevice + " config to " + _sonarManager.GetSelectedAudioConfiguration(newConfig.AssociatedDevice).Name);
+        Console.WriteLine("Changed " + newConfig.AssociatedDevice + " config to " + _sonarManager.GetSelectedAudioConfiguration(newConfig.AssociatedDevice).Name);
         _client.StateUpdate($"tp_steelseries-gg_state_config_{newConfig.AssociatedDevice.ToString().ToLower()}", _sonarManager.GetSelectedAudioConfiguration(newConfig.AssociatedDevice).Name);
         TriggerEvent("tp_steelseries-gg_state_last_updated_config", newConfig.AssociatedDevice.ToString());
     }
 
     void OnRedirectionDeviceChangeHandler(object? sender, SonarRedirectionDeviceEvent eventArgs)
     {
-        Log(eventArgs.Device + " " + eventArgs.Channel +" Redirection device changed");
+        Console.WriteLine(eventArgs.Device + " " + eventArgs.Channel +" Redirection device changed");
         _client.StateUpdate($"tp_steelseries-gg_state_redirection_device_{eventArgs.Device.ToString().ToLower()}{eventArgs.Channel.ToString().ToLower()}", _sonarManager.GetRedirectionDeviceFromId(eventArgs.RedirectionDeviceId).Name);
         Thread.Sleep(100);
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.GetChatMixState() ? "Enabled" : "Disabled");
@@ -449,7 +449,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnRedirectionStateChangeHandler(object? sender, SonarRedirectionStateEvent eventArgs)
     {
-        Log("Redirection State " + eventArgs.Device + ", " + eventArgs.Channel + " " + (eventArgs.State ? "Enabled" : "Disabled"));
+        Console.WriteLine("Redirection State " + eventArgs.Device + ", " + eventArgs.Channel + " " + (eventArgs.State ? "Enabled" : "Disabled"));
         _client.StateUpdate($"tp_steelseries-gg_state_redirection_state_{eventArgs.Channel.ToString().ToLower()}_{eventArgs.Device.ToString().ToLower()}", eventArgs.State ? "Enabled" : "Disabled");
         TriggerEvent("tp_steelseries-gg_state_last_updated_redirection_state", eventArgs.Channel + " - " + eventArgs.Device);
     }
@@ -460,7 +460,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         if (_audienceMonitoringLastState != eventArgs.AudienceMonitoringState)
         {
             _audienceMonitoringLastState = eventArgs.AudienceMonitoringState;
-            Log("Adience monitoring " + (eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled"));
+            Console.WriteLine("Adience monitoring " + (eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled"));
             _client.StateUpdate("tp_steelseries-gg_state_audience_monitoring",
                 eventArgs.AudienceMonitoringState ? "Enabled" : "Disabled");
             _client.TriggerEvent("tp_steelseries-gg_event_on_audience_monitoring");
@@ -472,7 +472,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         // Open latest version download page on notification click
         if (message.OptionId == "tp_steelseries-gg_new_update_dl")
         {
-            Log("Opening: https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest");
+            Console.WriteLine("Opening: https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest");
             Process.Start(new ProcessStartInfo
             {
                 FileName = "https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest",
@@ -491,7 +491,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         int versionCompare = latestVersion.CompareTo(currentVersion);
         if (versionCompare > 0)
         {
-            Log("A new update is available!");
+            Console.WriteLine("A new update is available!");
             // Send notification
             _client.ShowNotification(
                 "tp_steelseries-gg_new_update_" + latestVersion + "_" + DateTime.Now.ToString("yyyyMMddHHmmss"),
@@ -506,18 +506,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
         else if (versionCompare < 0)
         {
-            Log("You are using a pre-release version!");
+            Console.WriteLine("You are using a pre-release version!");
         }
         else
         {
-            Log("Up to date!");
+            Console.WriteLine("Up to date!");
         }
-    }
-
-    private void Log(string log)
-    {
-        _writer.WriteLine(log);
-        Console.WriteLine(log);
     }
     
     private void PipeMonitoring()
@@ -548,9 +542,9 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         }
         catch (IOException ex)
         {
-            Log($"Logger died: {ex.Message}");
+            Console.WriteLine($"Logger died: {ex.Message}");
         }
-        _writer.Close();
+        pipeWriter.Close();
         _pipeClient.Close();
         _sonarManager.StopListener();
         Environment.Exit(0);

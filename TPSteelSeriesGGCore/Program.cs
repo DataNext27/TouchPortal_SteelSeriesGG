@@ -107,6 +107,7 @@ class MultiTextWriter : TextWriter
     public override void WriteLine(string value)
     {
         WriteWithTimestamp(value + Environment.NewLine);
+        SteelSeriesPluginMain.pipeWriter.WriteLine(value);
     }
 
     public override void Flush()
