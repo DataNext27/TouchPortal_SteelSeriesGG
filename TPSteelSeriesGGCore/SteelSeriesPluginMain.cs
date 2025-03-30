@@ -33,6 +33,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     // Master, Game, Chat, Media, Aux, Mic
     private int[] _connectorsLevel = [-1, -1, -1, -1, -1, -1];
     private int[][] _connectorsLevelStreamer = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]];
+    private int _connectorChatMix = -1;
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
@@ -86,19 +87,30 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             // Classic
             var level = (int)(_sonarManager.GetVolume(device) * 100f);
-            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", level);
-            _connectorsLevel[(int) device] = level;
+            if (_connectorsLevel[(int)device] != level)
+            {
+                _connectorsLevel[(int) device] = level;
+                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|device={device.ToString()}", level);
+            }
             
             // Streamer
             foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
             {
                 level = (int)(_sonarManager.GetVolume(device, channel) * 100f);
-                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", level);
-                _connectorsLevelStreamer[(int) device][(int) channel] = level;
+                if (_connectorsLevelStreamer[(int)device][(int)channel] != level)
+                {
+                    _connectorsLevelStreamer[(int) device][(int) channel] = level;
+                    _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|channel={channel.ToString()}|device={device.ToString()}", level);
+                }
             }
         }
-        
-        _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((_sonarManager.GetChatMixBalance() * 100f)+1)*50));
+
+        var chatMixBalance = (int)(((_sonarManager.GetChatMixBalance() * 100f) + 1) * 50);
+        if (_connectorChatMix != chatMixBalance)
+        {
+            _connectorChatMix = chatMixBalance;
+            _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", chatMixBalance);
+        }
     }
 
     void InitializeStates()
