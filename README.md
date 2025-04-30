@@ -38,10 +38,10 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
  - Switch Mode
  - Toggle mute
  - Change Config
- - Change Redirections Devices
- - Toggle Redirections States
+ - Change Playback Devices
+ - Toggle Mix
  - Toggle Audience Monitoring
- - Route active window audio to chosen device
+ - Route active window audio to chosen channel
 
 ### Sliders
  - Change Volume
@@ -51,7 +51,7 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
  - Mode
    - Values: Classic/Streamer mode
  - Volume
-   - Values: Chosen virtual device volume
+   - Values: Chosen channel volume
    - Note: Volume is from 0 to 100
  - Mute
    - Valid Values: Muted, Unmuted
@@ -60,13 +60,13 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
    - Values: -1 to 1
  - ChatMix State
    - Values: True/False
-   - Note: True if game and chat redirections devices are the same, else False
- - Redirections Devices
-   - Value: Name of the selected redirection device of the chosen device
+   - Note: True if game and chat playback devices are the same, else False
+ - Playback Devices
+   - Value: Name of the selected playback device of the chosen channel
 - Configs
-  - Values: Chosen device selected config
-- Redirections State
-  - Values: Enabled, Disabled
+  - Values: Chosen channel selected config
+- Mix States
+  - Values: Activated, Deactivated
   - Note: Can be changed in settings
 - Audience Monitoring State
   - Values: Enabled, Disabled
@@ -80,9 +80,9 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
    - Default: Muted,Unmuted
    - How To Use: {Muted Text},{Unmuted Text} (the "," is required)
    - Note: Just for customize state in button text
- - Redirection States Names
+ - Mix States Names
    - Values: text
-   - Default: Enabled,Disabled
+   - Default: Activated,Deactivated
    - How To Use: {Enabled Text},{Disabled Text} (the "," is required)
    - Note: Just for customize state in button text
  - Audience Monitoring States Names
@@ -95,9 +95,11 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
 ```
 v2.0.0
   - Complete rewrite of the plugin
+  - Names of actions changed to follow SteelSeries documentation
   - Added routing support
   - Logs are now available in the Logs tab
   - Prevent plugin from starting before Sonar is started
+  - Prevent plugin form crashing when Sonar is closed
   - Reorganized all the menus
   - Added Events
   - Added different language support
