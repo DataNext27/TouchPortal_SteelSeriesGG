@@ -395,8 +395,11 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
                 switch (message.ListId)
                 {
                     case "channel":
-                        _client.ChoiceUpdate("config", _sonarManager.Configurations.GetAudioConfigurations((Channel)Enum.Parse(typeof(Channel), message.Value, true)).Select(config => config.Name).ToArray());
-                        break;  
+                    {
+                        Channel channel = (Channel)Enum.Parse(typeof(Channel), message.Value, true);
+                        _client.ChoiceUpdate("config", _sonarManager.Configurations.GetAudioConfigurations(channel).Select(config => config.Name).ToArray());
+                        break;
+                    }
                 }
                 break;
             
