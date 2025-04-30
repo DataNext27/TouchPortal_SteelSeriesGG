@@ -635,7 +635,7 @@
           "valueStateId": "tp_steelseries-gg_state_last_updated_playback_device"
         },
         {
-          "id": "tp_steelseries-gg_event_on_redirection_state",
+          "id": "tp_steelseries-gg_event_on_mix",
           "name": "On Mix change",
           "format": "When $val Mix gets activated/deactivated",
           "type": "communicate",
@@ -1067,9 +1067,9 @@
           "parentGroup": ""
         },
         {
-          "id": "tp_steelseries-gg_state_playback_device_monitoring",
+          "id": "tp_steelseries-gg_state_playback_device_personal",
           "type": "text",
-          "desc": "Monitoring",
+          "desc": "Personal",
           "default": "",
           "parentGroup": ""
         },
