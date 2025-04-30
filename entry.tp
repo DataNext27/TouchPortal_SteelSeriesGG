@@ -1079,6 +1079,13 @@
           "desc": "Stream",
           "default": "",
           "parentGroup": ""
+        },
+        {
+          "id": "tp_steelseries-gg_state_playback_device_streamer_mic",
+          "type": "text",
+          "desc": "Streamer Mic",
+          "default": "",
+          "parentGroup": ""
         }
       ]
     },

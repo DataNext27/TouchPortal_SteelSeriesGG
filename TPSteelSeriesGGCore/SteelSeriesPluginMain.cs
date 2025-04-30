@@ -530,18 +530,21 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     void OnConfigChangeHandler(object? sender, SonarConfigEvent eventArgs)
     {
         SonarAudioConfiguration newConfig = _sonarManager.Configurations.GetAudioConfiguration(eventArgs.ConfigId);
-        Console.WriteLine("Changed " + newConfig.AssociatedChannel + " config to " + _sonarManager.Configurations.GetSelectedAudioConfiguration(newConfig.AssociatedChannel).Name);
+        Console.WriteLine("Changed " + newConfig.AssociatedChannel + " config to " + newConfig.Name);
         _client.StateUpdate($"tp_steelseries-gg_state_config_{newConfig.AssociatedChannel.ToString().ToLower()}", _sonarManager.Configurations.GetSelectedAudioConfiguration(newConfig.AssociatedChannel).Name);
         TriggerEvent("tp_steelseries-gg_state_last_updated_config", newConfig.AssociatedChannel.ToString());
     }
 
     void OnPlaybackDeviceChangeHandler(object? sender, SonarPlaybackDeviceEvent eventArgs)
     {
-        Console.WriteLine(eventArgs.Channel + " " + eventArgs.Mix +" Playback device changed");
-        _client.StateUpdate($"tp_steelseries-gg_state_playback_device_{eventArgs.Channel.ToString().ToLower()}{eventArgs.Mix.ToString().ToLower()}", _sonarManager.PlaybackDevices.GetPlaybackDevice(eventArgs.PlaybackDeviceId).Name);
+        Console.WriteLine(eventArgs.Mode + " mode, " + eventArgs.Channel +  eventArgs.Mix + " Playback device changed");
+        if (eventArgs.Mode == Mode.STREAMER && eventArgs.Channel == Channel.MIC)
+            _client.StateUpdate("tp_steelseries-gg_state_playback_device_streamer_mic", _sonarManager.PlaybackDevices.GetPlaybackDevice(eventArgs.PlaybackDeviceId).Name);
+        else _client.StateUpdate($"tp_steelseries-gg_state_playback_device_{eventArgs.Channel.ToString()!.ToLower()}{eventArgs.Mix.ToString()!.ToLower()}", _sonarManager.PlaybackDevices.GetPlaybackDevice(eventArgs.PlaybackDeviceId).Name);
+        
         Thread.Sleep(100);
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.ChatMix.GetState() ? "Enabled" : "Disabled");
-        TriggerEvent("tp_steelseries-gg_state_last_updated_playback_device", eventArgs.Channel == Channel.MIC ? eventArgs.Mode + " - Mic" : eventArgs.Mix.HasValue ? eventArgs.Mix.ToString() : eventArgs.Channel.ToString());
+        TriggerEvent("tp_steelseries-gg_state_last_updated_playback_device", eventArgs.Channel == Channel.MIC ? eventArgs.Mode + " - Mic" : eventArgs.Mix.HasValue ? eventArgs.Mix.ToString()! : eventArgs.Channel.ToString()!);
     }
 
     void OnRoutedProcessChangeHandler(object? sender, SonarRoutedProcessEvent eventArgs)
@@ -551,8 +554,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void OnMixChangeHandler(object? sender, SonarMixEvent eventArgs)
     {
-        Console.WriteLine("Mix " + eventArgs.Channel + ", " + eventArgs.Mix + " " + (eventArgs.NewState ? "Enabled" : "Disabled"));
-        _client.StateUpdate($"tp_steelseries-gg_state_mix_{eventArgs.Mix.ToString().ToLower()}_{eventArgs.Channel.ToString().ToLower()}", eventArgs.NewState ? "Enabled" : "Disabled");
+        Console.WriteLine("Mix " + eventArgs.Channel + ", " + eventArgs.Mix + " " + (eventArgs.NewState ? "Activated" : "Deactivated"));
+        _client.StateUpdate($"tp_steelseries-gg_state_mix_{eventArgs.Mix.ToString().ToLower()}_{eventArgs.Channel.ToString().ToLower()}", eventArgs.NewState ? "Activated" : "Deactivated");
         TriggerEvent("tp_steelseries-gg_state_last_updated_mix", eventArgs.Mix + " - " + eventArgs.Channel);
     }
 
@@ -563,8 +566,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             _audienceMonitoringLastState = eventArgs.NewState;
             Console.WriteLine("Adience monitoring " + (eventArgs.NewState ? "Enabled" : "Disabled"));
-            _client.StateUpdate("tp_steelseries-gg_state_audience_monitoring",
-                eventArgs.NewState ? "Enabled" : "Disabled");
+            _client.StateUpdate("tp_steelseries-gg_state_audience_monitoring", eventArgs.NewState ? "Enabled" : "Disabled");
             _client.TriggerEvent("tp_steelseries-gg_event_on_audience_monitoring");
         }
     }
