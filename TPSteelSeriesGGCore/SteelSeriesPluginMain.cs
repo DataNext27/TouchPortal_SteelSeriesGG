@@ -168,7 +168,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _audienceMonitoringLastState = _sonarManager.AudienceMonitoring.GetState();
     }
 
-    void OnClosedEvent(string message)
+    public void OnClosedEvent(string message)
     {
         // Exit the app on TP Close
         pipeWriter.Close();
@@ -271,7 +271,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             case "tp_steelseries-gg_set_streamer_playback_device":
             {
                 var playbackDevice = message["playbackDevice"];
-                var channelOrMix = Enum.TryParse(typeof(Channel), message["channel-mix"], true, out var c) ? (object)(Channel)c : (object)Enum.Parse(typeof(Mix), message["channel-mix"], true);
+                var channelOrMix = Enum.TryParse(typeof(Channel), message["channel-mix"], true, out var c) ? (Channel)c : Enum.Parse(typeof(Mix), message["channel-mix"], true);
                 
                 if (channelOrMix is Channel) // Then its MIC
                 {
@@ -358,15 +358,20 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             // Set classic volumes with sliders
             case "tp_steelseries-gg_classic_set_volume":
-                _sonarManager.VolumeSettings.SetVolume(message.Value / 100f, (Channel)Enum.Parse(typeof(Channel), message["channel"], true)); 
+            {
+                Channel channel = (Channel)Enum.Parse(typeof(Channel), message["channel"], true);
+                _sonarManager.VolumeSettings.SetVolume(message.Value / 100f, channel);
                 break;
+            }
             
             // Set streamer volumes with sliders
             case "tp_steelseries-gg_streamer_set_volume":
-                _sonarManager.VolumeSettings.SetVolume(message.Value / 100f,
-                    (Channel)Enum.Parse(typeof(Channel), message["channel"], true),
-                    (Mix)Enum.Parse(typeof(Mix), message["mix"], true));
+            {
+                Channel channel = (Channel)Enum.Parse(typeof(Channel), message["channel"], true);
+                Mix mix = (Mix)Enum.Parse(typeof(Mix), message["mix"], true);
+                _sonarManager.VolumeSettings.SetVolume(message.Value / 100f, channel, mix);
                 break;
+            }
             
             // Change ChatMix balance if possible
             case "tp_steelseries-gg_set_chatmix_balance":
