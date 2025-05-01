@@ -359,6 +359,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             // Set classic volumes with sliders
             case "tp_steelseries-gg_classic_set_volume":
             {
+                if (_sonarManager.Mode.Get() != Mode.CLASSIC)
+                {
+                    Console.WriteLine("Could not change volume, you are in the wrong mode");
+                    break;
+                }
+                
                 Channel channel = (Channel)Enum.Parse(typeof(Channel), message["channel"], true);
                 _sonarManager.VolumeSettings.SetVolume(message.Value / 100f, channel);
                 break;
@@ -367,6 +373,12 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             // Set streamer volumes with sliders
             case "tp_steelseries-gg_streamer_set_volume":
             {
+                if (_sonarManager.Mode.Get() != Mode.STREAMER)
+                {
+                    Console.WriteLine("Could not change volume, you are in the wrong mode");
+                    break;
+                }
+                
                 Channel channel = (Channel)Enum.Parse(typeof(Channel), message["channel"], true);
                 Mix mix = (Mix)Enum.Parse(typeof(Mix), message["mix"], true);
                 _sonarManager.VolumeSettings.SetVolume(message.Value / 100f, channel, mix);
