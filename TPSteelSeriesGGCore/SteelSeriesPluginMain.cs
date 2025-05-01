@@ -28,12 +28,6 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     private readonly SonarBridge _sonarManager;
     private NamedPipeClientStream _pipeClient;
     public static StreamWriter pipeWriter;
-    
-    // Keep track of connectors level
-    // Master, Game, Chat, Media, Aux, Mic
-    private int[] _connectorsLevel = [-1, -1, -1, -1, -1, -1];
-    private int[][] _connectorsLevelStreamer = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]];
-    private int _connectorChatMix = -1;
 
     public SteelSeriesPluginMain()
     {
@@ -72,6 +66,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _sonarManager.Events.OnSonarAudienceMonitoringChange += OnAudienceMonitoringChangeHandler;
 
         InitializeConnectors();
+        InitializeEventStates();
         InitializeStates();
         Console.WriteLine("Initialized!");
     }
@@ -84,38 +79,20 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     void InitializeConnectors()
     {
-        // Initialize sliders
         foreach (Channel channel in (Channel[]) Enum.GetValues(typeof(Channel)))
         {
-            // Classic
-            var level = (int)(_sonarManager.VolumeSettings.GetVolume(channel) * 100f);
-            if (_connectorsLevel[(int)channel] != level)
-            {
-                _connectorsLevel[(int) channel] = level;
-                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|channel={channel.ToString().ToLowerFirstUpper()}", level);
-            }
-            
-            // Streamer
+            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|channel={channel.ToString().ToLowerFirstUpper()}", (int)(_sonarManager.VolumeSettings.GetVolume(channel) * 100f));
+
             foreach (Mix mix in (Mix[]) Enum.GetValues(typeof(Mix)))
             {
-                level = (int)(_sonarManager.VolumeSettings.GetVolume(channel, mix) * 100f);
-                if (_connectorsLevelStreamer[(int)channel][(int)mix] != level)
-                {
-                    _connectorsLevelStreamer[(int) channel][(int) mix] = level;
-                    _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mix.ToString().ToLowerFirstUpper()}|channel={channel.ToString().ToLowerFirstUpper()}", level);
-                }
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mix.ToString().ToLowerFirstUpper()}|channel={channel.ToString().ToLowerFirstUpper()}", (int)(_sonarManager.VolumeSettings.GetVolume(channel, mix) * 100f));
             }
         }
         
-        var chatMixBalance = (int)(((_sonarManager.ChatMix.GetBalance() * 100f) + 1) * 50);
-        if (_connectorChatMix != chatMixBalance)
-        {
-            _connectorChatMix = chatMixBalance;
-            _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", chatMixBalance);
-        }
+        _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(50 * (_sonarManager.ChatMix.GetBalance() + 1)));
     }
 
-    void InitializeStates()
+    void InitializeEventStates()
     {
         // Events states
         _client.RemoveState("tp_steelseries-gg_state_last_updated_volume");
@@ -130,7 +107,10 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         _client.CreateState("tp_steelseries-gg_state_last_updated_mix", "Last Updated Mix Channel", "", "SteelSeries GG Sonar");
         _client.RemoveState("tp_steelseries-gg_state_last_updated_playback_device");
         _client.CreateState("tp_steelseries-gg_state_last_updated_playback_device", "Last Updated Playback Device", "", "SteelSeries GG Sonar");
+    }
 
+    void InitializeStates()
+    {
         // Display States
         _client.StateUpdate("tp_steelseries-gg_state_mode", _sonarManager.Mode.Get().ToString());
         _client.StateUpdate("tp_steelseries-gg_state_chatmix_state", _sonarManager.ChatMix.GetState() ? "Enabled" : "Disabled");
@@ -139,7 +119,8 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         
         foreach (var channel in (Channel[]) Enum.GetValues(typeof(Channel)))
         {
-            _client.StateUpdate($"tp_steelseries-gg_state_volume_{channel.ToString().ToLower()}", _connectorsLevel[(int) channel].ToString());
+            // _client.StateUpdate($"tp_steelseries-gg_state_volume_{channel.ToString().ToLower()}", _connectorsLevel[(int) channel].ToString());
+            _client.StateUpdate($"tp_steelseries-gg_state_volume_{channel.ToString().ToLower()}", ((int)(_sonarManager.VolumeSettings.GetVolume(channel) * 100f)).ToString());
             _client.StateUpdate($"tp_steelseries-gg_state_mute_{channel.ToString().ToLower()}", _sonarManager.VolumeSettings.GetMute(channel) ? "Muted" : "Unmuted");
 
             if (channel != Channel.MASTER)
@@ -150,19 +131,18 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
             
             foreach (var mix in (Mix[]) Enum.GetValues(typeof(Mix)))
             {
-                _client.StateUpdate($"tp_steelseries-gg_state_volume_{mix.ToString().ToLower()}_{channel.ToString().ToLower()}", _connectorsLevelStreamer[(int) channel][(int) mix].ToString());
+                _client.StateUpdate($"tp_steelseries-gg_state_volume_{mix.ToString().ToLower()}_{channel.ToString().ToLower()}", ((int)(_sonarManager.VolumeSettings.GetVolume(channel, mix) * 100f)).ToString());
                 _client.StateUpdate($"tp_steelseries-gg_state_mute_{mix.ToString().ToLower()}_{channel.ToString().ToLower()}", _sonarManager.VolumeSettings.GetMute(channel, mix) ? "Muted" : "Unmuted");
-                _client.StateUpdate($"tp_steelseries-gg_state_playback_device_{mix.ToString().ToLower()}", _sonarManager.PlaybackDevices.GetPlaybackDevice(mix).Name);
                 if (channel != Channel.MASTER)
-                {   
+                {
                     _client.StateUpdate($"tp_steelseries-gg_state_mix_{mix.ToString().ToLower()}_{channel.ToString().ToLower()}", _sonarManager.Mix.GetState(channel, mix) ? "Enabled" : "Disabled");
                 }
             }
         }
 
-        // Change Mic Playback Device state depending on the mode
-        if (_sonarManager.Mode.Get() == Mode.CLASSIC)_client.StateUpdate("tp_steelseries-gg_state_playback_device_mic", _sonarManager.PlaybackDevices.GetPlaybackDevice(Channel.MIC).Name);
-        else _client.StateUpdate("tp_steelseries-gg_state_playback_device_mic", _sonarManager.PlaybackDevices.GetPlaybackDevice(Channel.MIC, Mode.STREAMER).Name);
+        _client.StateUpdate("tp_steelseries-gg_state_playback_device_personal", _sonarManager.PlaybackDevices.GetPlaybackDevice(Mix.PERSONAL).Name);
+        _client.StateUpdate("tp_steelseries-gg_state_playback_device_stream", _sonarManager.PlaybackDevices.GetPlaybackDevice(Mix.STREAM).Name);
+        _client.StateUpdate("tp_steelseries-gg_state_playback_device_streamer_mic", _sonarManager.PlaybackDevices.GetPlaybackDevice(Channel.MIC, Mode.STREAMER).Name);
         
         // Audience Monitoring State to prevent multiple call from the event
         _audienceMonitoringLastState = _sonarManager.AudienceMonitoring.GetState();
@@ -441,9 +421,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
 
     public void OnBroadcastEvent(BroadcastEvent message)
     {
-        // Reinitialize Connectors when page change
-        // Prevent some connectors not being updated
-        InitializeConnectors();
+        
     }
 
     void TriggerEvent(string valueStateId, string value = "")
@@ -466,54 +444,45 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
     
     void OnVolumeChangeHandler(object? sender, SonarVolumeEvent eventArgs)
     {
-        // Update Connectors
+        Console.WriteLine(eventArgs.Mode + " mode " + eventArgs.Channel + " " + eventArgs.Mix + " volume changed to " + eventArgs.Volume);
         if (eventArgs.Mode == Mode.CLASSIC)
         {
-            Console.WriteLine(eventArgs.Channel + " volume changed, updating connectors/sliders...");
-            if ((eventArgs.Channel == Channel.MASTER || eventArgs.Volume > _sonarManager.VolumeSettings.GetVolume(Channel.MASTER)) && eventArgs.Channel != Channel.MIC)
+            if (eventArgs.Channel == Channel.MASTER)
             {
-                foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
-                {
-                    if (eventArgs.Channel == Channel.MIC) continue;
-                    var level = (int)(_sonarManager.VolumeSettings.GetVolume(channel) * 100f);
-                    if (_connectorsLevel[(int) channel] == level) continue;
-                    _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|channel={channel.ToString()}", level);
-                    _connectorsLevel[(int)channel] = level;
-                    _client.StateUpdate($"tp_steelseries-gg_state_volume_{channel.ToString().ToLower()}", level.ToString());
-                }
+                _client.ConnectorUpdate("tp_steelseries-gg_classic_set_volume|channel=Game", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.GAME) * 100f));
+                _client.ConnectorUpdate("tp_steelseries-gg_classic_set_volume|channel=Chat", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.CHAT) * 100f));
+                _client.ConnectorUpdate("tp_steelseries-gg_classic_set_volume|channel=Media", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.MEDIA) * 100f));
+                _client.ConnectorUpdate("tp_steelseries-gg_classic_set_volume|channel=Aux", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.AUX) * 100f));
             }
-            else
+            if (eventArgs.Channel != Channel.MASTER && eventArgs.Channel != Channel.MIC &&
+                eventArgs.Volume >= _sonarManager.VolumeSettings.GetVolume(Channel.MASTER) - 0.01)
             {
-                _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|channel={eventArgs.Channel.ToString()}", (int)(eventArgs.Volume * 100f));
-                _connectorsLevel[(int)eventArgs.Channel] = (int)(eventArgs.Volume * 100f);
-                _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Channel.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
+                _client.ConnectorUpdate("tp_steelseries-gg_classic_set_volume|channel=Master", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.MASTER) * 100f));
             }
+            _client.ConnectorUpdate($"tp_steelseries-gg_classic_set_volume|channel={eventArgs.Channel.ToString().ToLowerFirstUpper()}", (int)(eventArgs.Volume * 100f));
+            _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Channel.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             TriggerEvent("tp_steelseries-gg_state_last_updated_volume", eventArgs.Channel.ToString());
         }
         else
         {
-            Console.WriteLine(eventArgs.Channel + ", " + eventArgs.Mix + " volume changed, updating connectors/sliders...");
-            if ((eventArgs.Channel == Channel.MASTER || eventArgs.Volume > _sonarManager.VolumeSettings.GetVolume(Channel.MASTER, (Mix)eventArgs.Mix!)) && eventArgs.Channel != Channel.MIC)
+            if (eventArgs.Channel == Channel.MASTER)
             {
-                foreach (var channel in Enum.GetValues(typeof(Channel)).Cast<Channel>())
-                {
-                    if (eventArgs.Channel == Channel.MIC) continue;
-                    foreach (var mix in Enum.GetValues(typeof(Mix)).Cast<Mix>())
-                    {
-                        var level = (int)(_sonarManager.VolumeSettings.GetVolume(channel, mix) * 100f);
-                        if (_connectorsLevelStreamer[(int) channel][(int) mix] == level) continue;
-                        _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|mix={mix.ToString().ToLowerFirstUpper()}|channel={channel.ToString().ToLowerFirstUpper()}", level);
-                        _connectorsLevelStreamer[(int) channel][(int) mix] = level;
-                        _client.StateUpdate($"tp_steelseries-gg_state_volume_{mix.ToString().ToLower()}_{channel.ToString().ToLower()}", level.ToString());
-                    }
-                }
+                Mix mix = (Mix)eventArgs.Mix!;
+                string mixString = mix.ToString().ToLowerFirstUpper();
+                
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mixString}|channel=Game", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.GAME, mix) * 100f));
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mixString}|channel=Chat", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.CHAT, mix) * 100f));
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mixString}|channel=Media", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.MEDIA, mix) * 100f));
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={mixString}|channel=Aux", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.AUX, mix) * 100f));
             }
-            else
+
+            if (eventArgs.Channel != Channel.MASTER && eventArgs.Channel != Channel.MIC &&
+                eventArgs.Volume >= _sonarManager.VolumeSettings.GetVolume(Channel.MASTER, (Mix)eventArgs.Mix!) - 0.01)
             {
-                _client.ConnectorUpdate($"tp_steelseries-gg_stream_set_volume|mix={eventArgs.Mix.ToString()!.ToLowerFirstUpper()}|channel={eventArgs.Channel.ToString().ToLowerFirstUpper()}", (int)(eventArgs.Volume * 100f));
-                _connectorsLevelStreamer[(int) eventArgs.Channel][(int) eventArgs.Mix!] = (int)(eventArgs.Volume * 100f);
-                _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Mix.ToString()!.ToLower()}_{eventArgs.Channel.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
+                _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={eventArgs.Mix.ToString()!.ToLowerFirstUpper()}|channel=Master", (int)(_sonarManager.VolumeSettings.GetVolume(Channel.MASTER, (Mix)eventArgs.Mix!) * 100f));
             }
+            _client.ConnectorUpdate($"tp_steelseries-gg_streamer_set_volume|mix={eventArgs.Mix.ToString()!.ToLowerFirstUpper()}|channel={eventArgs.Channel.ToString().ToLowerFirstUpper()}", (int)(eventArgs.Volume * 100f));
+            _client.StateUpdate($"tp_steelseries-gg_state_volume_{eventArgs.Mix.ToString()!.ToLower()}_{eventArgs.Channel.ToString().ToLower()}", ((int)(eventArgs.Volume * 100f)).ToString());
             TriggerEvent("tp_steelseries-gg_state_last_updated_volume", $"{eventArgs.Mix.ToString()} - {eventArgs.Channel.ToString()}");
         }
     }
@@ -525,7 +494,7 @@ public class SteelSeriesPluginMain : ITouchPortalEventHandler
         {
             _chatMixHadEvent = true;
             Console.WriteLine("ChatMix balance changed");
-            _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(((eventArgs.Balance * 100f) + 1) * 50));
+            _client.ConnectorUpdate("tp_steelseries-gg_set_chatmix_balance", (int)(50 * (eventArgs.Balance + 1)));
             _client.StateUpdate("tp_steelseries-gg_state_chatmix_balance", eventArgs.Balance.ToString(CultureInfo.InvariantCulture));
             _client.TriggerEvent("tp_steelseries-gg_event_on_chatmix_balance");
         }
