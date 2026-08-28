@@ -20,5 +20,9 @@
     <ItemGroup>
         <Content Include="..\entry.tp" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="TPSteelSeriesGG.Tests" />
+    </ItemGroup>
     
 </Project>

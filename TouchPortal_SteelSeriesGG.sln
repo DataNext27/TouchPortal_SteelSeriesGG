@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPSteelSeriesGG", "TPSteelSeriesGG\TPSteelSeriesGG.csproj", "{51F38FA2-B83E-4442-AE7D-250C77744AD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPSteelSeriesGG.Tests", "TPSteelSeriesGG.Tests\TPSteelSeriesGG.Tests.csproj", "{BAF8BED6-86FE-41CB-A1C0-36341605853E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,5 +18,9 @@ Global
 		{112A528F-7781-456C-BC1E-245FB4B43E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{112A528F-7781-456C-BC1E-245FB4B43E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{112A528F-7781-456C-BC1E-245FB4B43E3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAF8BED6-86FE-41CB-A1C0-36341605853E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAF8BED6-86FE-41CB-A1C0-36341605853E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAF8BED6-86FE-41CB-A1C0-36341605853E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAF8BED6-86FE-41CB-A1C0-36341605853E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

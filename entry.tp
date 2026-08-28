@@ -8,6 +8,1236 @@
     "colorLight": "#272F37",
     "parentCategory": "audio"
   },
-  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\TPSteelSeriesGG.exe",
-  "categories":[]
+  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG/TPSteelSeriesGG.exe",
+  "settingsDescription": "Display customization: each 'Text' setting takes two values separated by a comma, '<On text>,<Off text>' (e.g. 'MUTED,LIVE'). They only change how states are displayed on your buttons; actions and events keep the standard values.",
+  "settings": [
+    {
+      "name": "Mute States Text",
+      "default": "Muted,Unmuted",
+      "type": "text",
+      "readOnly": false
+    },
+    {
+      "name": "Mix States Text",
+      "default": "On,Off",
+      "type": "text",
+      "readOnly": false
+    },
+    {
+      "name": "ChatMix State Text",
+      "default": "Enabled,Disabled",
+      "type": "text",
+      "readOnly": false
+    },
+    {
+      "name": "Audience Monitoring Text",
+      "default": "Enabled,Disabled",
+      "type": "text",
+      "readOnly": false
+    },
+    {
+      "name": "Audio Activity Text",
+      "default": "Playing,Silent",
+      "type": "text",
+      "readOnly": false
+    },
+    {
+      "name": "Connection Text",
+      "default": "Connected,Disconnected",
+      "type": "text",
+      "readOnly": false
+    }
+  ],
+  "categories": [
+    {
+      "id": "tp_steelseries-gg_sonar",
+      "name": "SteelSeries GG Sonar",
+      "imagepath": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG/icon-24.png",
+      "subCategories": [
+        {
+          "id": "tp_steelseries-gg_sonar.classic",
+          "name": "Classic Mode"
+        },
+        {
+          "id": "tp_steelseries-gg_sonar.streamer",
+          "name": "Streamer Mode"
+        }
+      ],
+      "actions": [
+        {
+          "id": "tp_steelseries-gg_switch_mode",
+          "name": "Switch mode",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Switch Sonar mode"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": []
+        },
+        {
+          "id": "tp_steelseries-gg_set_mode",
+          "name": "Set mode",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set Sonar mode to {$mode$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "mode",
+              "type": "choice",
+              "label": "Mode",
+              "default": "Classic",
+              "valueChoices": [
+                "Classic",
+                "Streamer"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_classic_mute",
+          "name": "Mute/Unmute (Classic)",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$channel$} (Classic)"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Mute",
+                "Unmute"
+              ]
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_streamer_mute",
+          "name": "Mute/Unmute (Streamer)",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$channel$} on {$mix$} mix"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Mute",
+                "Unmute"
+              ]
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "mix",
+              "type": "choice",
+              "label": "Mix",
+              "default": "Personal",
+              "valueChoices": [
+                "Personal",
+                "Stream"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_config",
+          "name": "Set channel config",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set {$channel$} config to {$config$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "config",
+              "type": "choice",
+              "label": "Config",
+              "default": "",
+              "valueChoices": []
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_classic_device",
+          "name": "Set device (Classic)",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set {$channel$} device to {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "label": "Device",
+              "default": "",
+              "valueChoices": []
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_streamer_device",
+          "name": "Set device (Streamer)",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set {$target$} device to {$device$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "target",
+              "type": "choice",
+              "label": "Target",
+              "default": "Personal Mix",
+              "valueChoices": [
+                "Personal Mix",
+                "Stream Mix",
+                "Streamer Mic"
+              ]
+            },
+            {
+              "id": "device",
+              "type": "choice",
+              "label": "Device",
+              "default": "",
+              "valueChoices": []
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_mix",
+          "name": "Toggle channel on mix",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} {$channel$} on {$mix$} mix"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Enable",
+                "Disable"
+              ]
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "mix",
+              "type": "choice",
+              "label": "Mix",
+              "default": "Personal",
+              "valueChoices": [
+                "Personal",
+                "Stream"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_set_audience_monitoring",
+          "name": "Toggle audience monitoring",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "{$action$} audience monitoring"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "action",
+              "type": "choice",
+              "label": "Action",
+              "default": "Toggle",
+              "valueChoices": [
+                "Toggle",
+                "Enable",
+                "Disable"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_route_active_window",
+          "name": "Route active window",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Route active window to {$channel$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_route_app",
+          "name": "Route application",
+          "type": "communicate",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Route {$app$} to {$channel$}"
+                  }
+                ]
+              }
+            ]
+          },
+          "data": [
+            {
+              "id": "app",
+              "type": "choice",
+              "label": "App",
+              "default": "",
+              "valueChoices": []
+            },
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Game",
+              "valueChoices": [
+                "Game",
+                "Chat",
+                "Media",
+                "Aux"
+              ]
+            }
+          ]
+        }
+      ],
+      "connectors": [
+        {
+          "id": "tp_steelseries-gg_connector_volume_classic",
+          "name": "Volume (Classic)",
+          "subCategoryId": "tp_steelseries-gg_sonar.classic",
+          "format": "Volume of {$channel$} (Classic)",
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_connector_volume_streamer",
+          "name": "Volume (Streamer)",
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
+          "format": "Volume of {$channel$} on {$mix$} mix",
+          "data": [
+            {
+              "id": "channel",
+              "type": "choice",
+              "label": "Channel",
+              "default": "Master",
+              "valueChoices": [
+                "Master",
+                "Game",
+                "Chat",
+                "Media",
+                "Aux",
+                "Mic"
+              ]
+            },
+            {
+              "id": "mix",
+              "type": "choice",
+              "label": "Mix",
+              "default": "Personal",
+              "valueChoices": [
+                "Personal",
+                "Stream"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_connector_chatmix",
+          "name": "ChatMix Balance",
+          "format": "ChatMix Balance",
+          "data": []
+        }
+      ],
+      "states": [
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_master",
+          "type": "text",
+          "desc": "Master Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_game",
+          "type": "text",
+          "desc": "Game Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_chat",
+          "type": "text",
+          "desc": "Chat Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_media",
+          "type": "text",
+          "desc": "Media Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_aux",
+          "type": "text",
+          "desc": "Aux Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_classic_mic",
+          "type": "text",
+          "desc": "Mic Volume (Classic)",
+          "default": "0",
+          "parentGroup": "Volumes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_master",
+          "type": "text",
+          "desc": "Master Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_game",
+          "type": "text",
+          "desc": "Game Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_chat",
+          "type": "text",
+          "desc": "Chat Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_media",
+          "type": "text",
+          "desc": "Media Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_aux",
+          "type": "text",
+          "desc": "Aux Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_personal_mic",
+          "type": "text",
+          "desc": "Mic Volume (Personal Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_master",
+          "type": "text",
+          "desc": "Master Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_game",
+          "type": "text",
+          "desc": "Game Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_chat",
+          "type": "text",
+          "desc": "Chat Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_media",
+          "type": "text",
+          "desc": "Media Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_aux",
+          "type": "text",
+          "desc": "Aux Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_volume_stream_mic",
+          "type": "text",
+          "desc": "Mic Volume (Stream Mix)",
+          "default": "0",
+          "parentGroup": "Volumes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_master",
+          "type": "text",
+          "desc": "Master Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_game",
+          "type": "text",
+          "desc": "Game Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_chat",
+          "type": "text",
+          "desc": "Chat Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_media",
+          "type": "text",
+          "desc": "Media Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_aux",
+          "type": "text",
+          "desc": "Aux Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_classic_mic",
+          "type": "text",
+          "desc": "Mic Mute (Classic)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Classic"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_master",
+          "type": "text",
+          "desc": "Master Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_game",
+          "type": "text",
+          "desc": "Game Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_chat",
+          "type": "text",
+          "desc": "Chat Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_media",
+          "type": "text",
+          "desc": "Media Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_aux",
+          "type": "text",
+          "desc": "Aux Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_personal_mic",
+          "type": "text",
+          "desc": "Mic Mute (Personal Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Personal Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_master",
+          "type": "text",
+          "desc": "Master Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_game",
+          "type": "text",
+          "desc": "Game Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_chat",
+          "type": "text",
+          "desc": "Chat Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_media",
+          "type": "text",
+          "desc": "Media Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_aux",
+          "type": "text",
+          "desc": "Aux Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mute_stream_mic",
+          "type": "text",
+          "desc": "Mic Mute (Stream Mix)",
+          "default": "Unmuted",
+          "parentGroup": "Mutes - Stream Mix"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mode",
+          "type": "text",
+          "desc": "Sonar Mode",
+          "default": "Classic",
+          "parentGroup": "General"
+        },
+        {
+          "id": "tp_steelseries-gg_state_chatmix_balance",
+          "type": "text",
+          "desc": "ChatMix Balance",
+          "default": "0",
+          "parentGroup": "General"
+        },
+        {
+          "id": "tp_steelseries-gg_state_chatmix_state",
+          "type": "text",
+          "desc": "ChatMix State",
+          "default": "Disabled",
+          "parentGroup": "General"
+        },
+        {
+          "id": "tp_steelseries-gg_state_audience_monitoring",
+          "type": "text",
+          "desc": "Audience Monitoring",
+          "default": "Disabled",
+          "parentGroup": "General"
+        },
+        {
+          "id": "tp_steelseries-gg_state_connection",
+          "type": "text",
+          "desc": "Sonar Connection",
+          "default": "Disconnected",
+          "parentGroup": "General"
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_game",
+          "type": "text",
+          "desc": "Game Config",
+          "default": "",
+          "parentGroup": "Configs"
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_chat",
+          "type": "text",
+          "desc": "Chat Config",
+          "default": "",
+          "parentGroup": "Configs"
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_media",
+          "type": "text",
+          "desc": "Media Config",
+          "default": "",
+          "parentGroup": "Configs"
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_aux",
+          "type": "text",
+          "desc": "Aux Config",
+          "default": "",
+          "parentGroup": "Configs"
+        },
+        {
+          "id": "tp_steelseries-gg_state_config_mic",
+          "type": "text",
+          "desc": "Mic Config",
+          "default": "",
+          "parentGroup": "Configs"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_classic_game",
+          "type": "text",
+          "desc": "Game Device (Classic)",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_classic_chat",
+          "type": "text",
+          "desc": "Chat Device (Classic)",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_classic_media",
+          "type": "text",
+          "desc": "Media Device (Classic)",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_classic_aux",
+          "type": "text",
+          "desc": "Aux Device (Classic)",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_classic_mic",
+          "type": "text",
+          "desc": "Mic Device (Classic)",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_personal_mix",
+          "type": "text",
+          "desc": "Personal Mix Device",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_stream_mix",
+          "type": "text",
+          "desc": "Stream Mix Device",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_device_streamer_mic",
+          "type": "text",
+          "desc": "Streamer Mic Device",
+          "default": "",
+          "parentGroup": "Devices"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_personal_game",
+          "type": "text",
+          "desc": "Game on Personal Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_personal_chat",
+          "type": "text",
+          "desc": "Chat on Personal Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_personal_media",
+          "type": "text",
+          "desc": "Media on Personal Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_personal_aux",
+          "type": "text",
+          "desc": "Aux on Personal Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_personal_mic",
+          "type": "text",
+          "desc": "Mic on Personal Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_stream_game",
+          "type": "text",
+          "desc": "Game on Stream Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_stream_chat",
+          "type": "text",
+          "desc": "Chat on Stream Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_stream_media",
+          "type": "text",
+          "desc": "Media on Stream Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_stream_aux",
+          "type": "text",
+          "desc": "Aux on Stream Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_mix_stream_mic",
+          "type": "text",
+          "desc": "Mic on Stream Mix",
+          "default": "Off",
+          "parentGroup": "Mixes"
+        },
+        {
+          "id": "tp_steelseries-gg_state_activity_game",
+          "type": "text",
+          "desc": "Game Audio Activity",
+          "default": "Silent",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_activity_chat",
+          "type": "text",
+          "desc": "Chat Audio Activity",
+          "default": "Silent",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_activity_media",
+          "type": "text",
+          "desc": "Media Audio Activity",
+          "default": "Silent",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_activity_aux",
+          "type": "text",
+          "desc": "Aux Audio Activity",
+          "default": "Silent",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_activity_mic",
+          "type": "text",
+          "desc": "Mic Audio Activity",
+          "default": "Silent",
+          "parentGroup": "Audio Activity"
+        }
+      ],
+      "events": [
+        {
+          "id": "tp_steelseries-gg_event_volume_changed",
+          "name": "On volume changed",
+          "format": "When a Sonar volume changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "channel",
+              "name": "Channel"
+            },
+            {
+              "id": "mix",
+              "name": "Mix (Classic/Personal/Stream)"
+            },
+            {
+              "id": "volume",
+              "name": "Volume (0-100)"
+            },
+            {
+              "id": "muted",
+              "name": "Muted (muted/unmuted)"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_mute_changed",
+          "name": "On mute changed",
+          "format": "When a Sonar mute state changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "channel",
+              "name": "Channel"
+            },
+            {
+              "id": "mix",
+              "name": "Mix (Classic/Personal/Stream)"
+            },
+            {
+              "id": "muted",
+              "name": "Muted (muted/unmuted)"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_mode_changed",
+          "name": "On mode changed",
+          "format": "When the Sonar mode changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "previous_mode",
+              "name": "Previous mode"
+            },
+            {
+              "id": "new_mode",
+              "name": "New mode"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_chatmix_changed",
+          "name": "On ChatMix changed",
+          "format": "When the ChatMix changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "balance",
+              "name": "Balance (-100 to 100)"
+            },
+            {
+              "id": "state",
+              "name": "State (enabled/disabled)"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_config_changed",
+          "name": "On config changed",
+          "format": "When a channel config changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "channel",
+              "name": "Channel"
+            },
+            {
+              "id": "previous_config",
+              "name": "Previous config"
+            },
+            {
+              "id": "config",
+              "name": "New config"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_device_changed",
+          "name": "On device changed",
+          "format": "When a redirection device changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "target",
+              "name": "Target (channel or mix)"
+            },
+            {
+              "id": "device",
+              "name": "New device"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_mix_toggled",
+          "name": "On mix toggled",
+          "format": "When a channel is toggled on a mix",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "mix",
+              "name": "Mix (Personal/Stream)"
+            },
+            {
+              "id": "channel",
+              "name": "Channel"
+            },
+            {
+              "id": "enabled",
+              "name": "Enabled (on/off)"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_monitoring_changed",
+          "name": "On audience monitoring changed",
+          "format": "When audience monitoring is toggled",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "enabled",
+              "name": "Enabled (on/off)"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_activity_changed",
+          "name": "On audio activity changed",
+          "format": "When audio starts or stops playing on a channel",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "channel",
+              "name": "Channel"
+            },
+            {
+              "id": "activity",
+              "name": "Activity (playing/silent)"
+            },
+            {
+              "id": "app",
+              "name": "Application name"
+            }
+          ]
+        },
+        {
+          "id": "tp_steelseries-gg_event_connection_changed",
+          "name": "On connection changed",
+          "format": "When the connection to Sonar changes",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [],
+          "valueStateId": "",
+          "localstates": [
+            {
+              "id": "connected",
+              "name": "Connected (connected/disconnected)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
