@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="entry.tp" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\entry.tp" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
     
 </Project>
