@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPSteelSeriesGG", "TPSteelSeriesGG\TPSteelSeriesGG.csproj", "{51F38FA2-B83E-4442-AE7D-250C77744AD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteelSeriesAPI", "..\SteelSeries-NET-API\SteelSeriesAPI\SteelSeriesAPI.csproj", "{112A528F-7781-456C-BC1E-245FB4B43E3B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

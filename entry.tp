@@ -1,0 +1,13 @@
+{
+  "api": 10,
+  "version": 200,
+  "name": "SteelSeries GG",
+  "id": "steelseries-gg",
+  "configuration": {
+    "colorDark": "#232B32",
+    "colorLight": "#272F37",
+    "parentCategory": "audio"
+  },
+  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG\\TPSteelSeriesGG.exe",
+  "categories":[]
+}
