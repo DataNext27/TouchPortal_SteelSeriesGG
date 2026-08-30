@@ -19,6 +19,7 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     private readonly ITouchPortalClient _client;
     private readonly SonarClient _sonar;
     private readonly StatePublisher _publisher;
+    private readonly ActionHandler _actions;
     private readonly ManualResetEventSlim _shutdown = new(false);
 
     public SteelSeriesPlugin(ILoggerFactory loggerFactory)
@@ -27,6 +28,7 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         _client = TouchPortalFactory.CreateClient(this);
         _sonar = new SonarClient(loggerFactory.CreateLogger("SteelSeriesAPI"));
         _publisher = new StatePublisher(_client, _sonar, loggerFactory.CreateLogger("StatePublisher"));
+        _actions = new ActionHandler(_client, _sonar, loggerFactory.CreateLogger("ActionHandler"));
     }
 
     /// <summary>Connects to Touch Portal, then starts the Sonar event stream.</summary>
@@ -43,8 +45,9 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
 
         // Sonar side: the listener owns discovery, reconnection, and GG liveness.
         // If GG is not running yet, the listener will simply connect when it appears,
-        // and the publisher's Connected handler will do the initial full state push.
+        // and the Connected handlers will push the initial state and choice lists.
         _publisher.Attach();
+        _actions.Attach();
         _sonar.Events.PollingInterval = TimeSpan.FromMilliseconds(500);
         _sonar.Events.Start();
     }
@@ -70,23 +73,23 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     }
 
     /// <inheritdoc />
+    public void OnActionEvent(ActionEvent message) =>
+        _ = _actions.HandleActionAsync(message); // handler catches and logs its own errors
+
+    /// <inheritdoc />
+    public void OnConnecterChangeEvent(ConnectorChangeEvent message) =>
+        _ = _actions.HandleConnectorChangeAsync(message);
+
+    /// <inheritdoc />
+    public void OnListChangedEvent(ListChangeEvent message) =>
+        _ = _actions.HandleListChangeAsync(message);
+
+    /// <inheritdoc />
     public void OnClosedEvent(string message)
     {
         _logger.LogInformation("Touch Portal closed the plugin: {Message}", message);
         _shutdown.Set();
     }
-
-    /// <inheritdoc />
-    public void OnActionEvent(ActionEvent message) =>
-        _logger.LogDebug("Action received: {ActionId}", message.ActionId);
-
-    /// <inheritdoc />
-    public void OnConnecterChangeEvent(ConnectorChangeEvent message) =>
-        _logger.LogDebug("Connector change: {ConnectorId}", message.ConnectorId);
-
-    /// <inheritdoc />
-    public void OnListChangedEvent(ListChangeEvent message) =>
-        _logger.LogDebug("List changed: {ListId}", message.ListId);
 
     /// <inheritdoc />
     public void OnBroadcastEvent(BroadcastEvent message) { }

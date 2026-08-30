@@ -32,6 +32,34 @@ internal static class TpMappings
         _ => "Classic",
     };
 
+    /// <summary>Parses an entry.tp channel display value ("Game", "Chat"...). Null when unknown.</summary>
+    public static Channel? ParseChannel(string? display) => display switch
+    {
+        "Master" => Channel.Master,
+        "Game" => Channel.Game,
+        "Chat" => Channel.Chat,
+        "Media" => Channel.Media,
+        "Aux" => Channel.Aux,
+        "Mic" => Channel.Mic,
+        _ => null,
+    };
+
+    /// <summary>Parses an entry.tp streamer mix display value ("Personal"/"Stream"). Null when unknown.</summary>
+    public static Mix? ParseStreamerMix(string? display) => display switch
+    {
+        "Personal" => Mix.Personal,
+        "Stream" => Mix.Stream,
+        _ => null,
+    };
+
+    /// <summary>Parses an entry.tp mode display value ("Classic"/"Streamer"). Null when unknown.</summary>
+    public static Mode? ParseMode(string? display) => display switch
+    {
+        "Classic" => Mode.Classic,
+        "Streamer" => Mode.Streamer,
+        _ => null,
+    };
+
     /// <summary>A volume (0..1 double from the library) as the 0-100 integer Touch Portal convention.</summary>
     public static int ToTpVolume(double volume) => (int)Math.Round(Math.Clamp(volume, 0, 1) * 100);
 
