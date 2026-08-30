@@ -96,8 +96,6 @@ All settings customize how states are displayed in your button texts. Each takes
 - Connection Text
     - Default: Connected,Disconnected
 
-Note: events always compare against the default (internal) values, so changing these settings never breaks your existing events.
-
 ## Changelog
 ```
 v2.0.0
