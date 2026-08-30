@@ -17,11 +17,21 @@ public sealed class ActionHandler
     private readonly ITouchPortalClient _client;
     private readonly SonarClient _sonar;
     private readonly ILogger _logger;
+    private readonly ConnectorEchoGuard _echoGuard;
 
-    public ActionHandler(ITouchPortalClient client, SonarClient sonar, ILogger logger)
+    // Latest pending volume write per connector, flushed every ~80ms: slider drags
+    // send one Touch Portal message per step, but only the last value matters.
+    private readonly object _volumeGate = new();
+    private readonly Dictionary<string, Func<Task>> _pendingVolumeWrites = new();
+    private bool _volumeFlushScheduled;
+
+    private int _appListRefreshQueued;
+
+    public ActionHandler(ITouchPortalClient client, SonarClient sonar, ConnectorEchoGuard echoGuard, ILogger logger)
     {
         _client = client;
         _sonar = sonar;
+        _echoGuard = echoGuard;
         _logger = logger;
     }
 
@@ -29,9 +39,10 @@ public sealed class ActionHandler
     public void Attach()
     {
         _sonar.Events.Connected += (_, _) => _ = RefreshChoiceListsAsync("connected");
-        // Keep the "running apps" list fresh as sessions come and go.
-        _sonar.Events.AudioSessionOpened += (_, _) => _ = RefreshAppListAsync();
-        _sonar.Events.AudioSessionClosed += (_, _) => _ = RefreshAppListAsync();
+        // Keep the "running apps" list fresh as sessions come and go (debounced:
+        // session events arrive in bursts, one refresh per burst is enough).
+        _sonar.Events.AudioSessionOpened += (_, _) => QueueAppListRefresh();
+        _sonar.Events.AudioSessionClosed += (_, _) => QueueAppListRefresh();
     }
 
     // ----------------------------------------------------------------
@@ -239,8 +250,12 @@ public sealed class ActionHandler
     // Connectors (sliders)
     // ----------------------------------------------------------------
 
-    /// <summary>Applies a Touch Portal slider move to the matching Sonar value.</summary>
-    public async Task HandleConnectorChangeAsync(ConnectorChangeEvent message)
+    /// <summary>
+    /// Applies a Touch Portal slider move to the matching Sonar value. Writes are
+    /// coalesced (last value wins, ~80ms flush) and the echo guard is armed so the
+    /// polling does not bounce the change back to Touch Portal mid-drag.
+    /// </summary>
+    public Task HandleConnectorChangeAsync(ConnectorChangeEvent message)
     {
         try
         {
@@ -248,32 +263,79 @@ public sealed class ActionHandler
             {
                 case TpIds.Connectors.VolumeClassic:
                 {
-                    if (TpMappings.ParseChannel(message[TpIds.Data.Channel]) is { } channel)
-                        await _sonar.VolumeSettings.SetVolumeAsync(channel, message.Value / 100.0);
+                    if (TpMappings.ParseChannel(message[TpIds.Data.Channel]) is not { } channel) break;
+                    string key = TpMappings.ConnectorKey(message.ConnectorId, channel.Display());
+                    _echoGuard.NoteTpMove(key);
+                    double volume = message.Value / 100.0;
+                    EnqueueVolumeWrite(key, () => _sonar.VolumeSettings.SetVolumeAsync(channel, volume));
                     break;
                 }
 
                 case TpIds.Connectors.VolumeStreamer:
                 {
-                    if (TpMappings.ParseChannel(message[TpIds.Data.Channel]) is { } channel &&
-                        TpMappings.ParseStreamerMix(message[TpIds.Data.Mix]) is { } mix)
-                        await _sonar.VolumeSettings.SetVolumeAsync(channel, mix, message.Value / 100.0);
+                    if (TpMappings.ParseChannel(message[TpIds.Data.Channel]) is not { } channel ||
+                        TpMappings.ParseStreamerMix(message[TpIds.Data.Mix]) is not { } mix) break;
+                    string key = TpMappings.ConnectorKey(message.ConnectorId, channel.Display(),
+                        mix == Mix.Personal ? "Personal" : "Stream");
+                    _echoGuard.NoteTpMove(key);
+                    double volume = message.Value / 100.0;
+                    EnqueueVolumeWrite(key, () => _sonar.VolumeSettings.SetVolumeAsync(channel, mix, volume));
                     break;
                 }
 
                 case TpIds.Connectors.ChatMix:
-                    await _sonar.ChatMix.SetAsync(message.Value / 50.0 - 1.0); // 0-100 -> -1..1
+                {
+                    _echoGuard.NoteTpMove(TpIds.Connectors.ChatMix);
+                    double balance = message.Value / 50.0 - 1.0; // 0-100 -> -1..1
+                    EnqueueVolumeWrite(TpIds.Connectors.ChatMix, () => _sonar.ChatMix.SetAsync(balance));
                     break;
+                }
             }
-        }
-        catch (SteelSeriesException ex)
-        {
-            _logger.LogWarning(ex, "Connector {ConnectorId} failed", message.ConnectorId);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error handling connector {ConnectorId}", message.ConnectorId);
         }
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Stores the latest write for a connector and flushes pending writes every ~80ms.</summary>
+    private void EnqueueVolumeWrite(string key, Func<Task> write)
+    {
+        lock (_volumeGate)
+        {
+            _pendingVolumeWrites[key] = write;
+            if (_volumeFlushScheduled) return;
+            _volumeFlushScheduled = true;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(80);
+
+                Func<Task>[] batch;
+                lock (_volumeGate)
+                {
+                    batch = _pendingVolumeWrites.Values.ToArray();
+                    _pendingVolumeWrites.Clear();
+                    if (batch.Length == 0)
+                    {
+                        _volumeFlushScheduled = false;
+                        return;
+                    }
+                }
+
+                foreach (Func<Task> pending in batch)
+                {
+                    try { await pending(); }
+                    catch (SteelSeriesException ex) { _logger.LogWarning(ex, "Coalesced connector write failed"); }
+                    catch (Exception ex) { _logger.LogError(ex, "Unexpected error in coalesced connector write"); }
+                }
+            }
+        });
     }
 
     // ----------------------------------------------------------------
@@ -328,9 +390,11 @@ public sealed class ActionHandler
         {
             _logger.LogInformation("Refreshing dynamic choice lists ({Reason})", reason);
 
-            var devices = await _sonar.Devices.GetAllAsync();
+            // Default device list: render devices, matching the actions' default targets
+            // (Game / Personal Mix). Picking Mic narrows to capture via the list update.
+            var devices = await _sonar.Devices.GetAllAsync(AudioDataFlow.Render);
             _client.ChoiceUpdate(TpIds.Data.Device,
-                devices.Where(d => !d.IsSonarVirtual).Select(d => d.Name).Distinct().Order().ToArray());
+                devices.Select(d => d.Name).Distinct().Order().ToArray());
 
             var configs = await _sonar.Configs.GetAllAsync();
             _client.ChoiceUpdate(TpIds.Data.Config,
@@ -342,6 +406,18 @@ public sealed class ActionHandler
         {
             _logger.LogWarning(ex, "Dynamic list refresh failed");
         }
+    }
+
+    /// <summary>Debounces app list refreshes: one refresh per burst of session events.</summary>
+    private void QueueAppListRefresh()
+    {
+        if (Interlocked.Exchange(ref _appListRefreshQueued, 1) == 1) return;
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(500);
+            Interlocked.Exchange(ref _appListRefreshQueued, 0);
+            await RefreshAppListAsync();
+        });
     }
 
     /// <summary>Refreshes the "running apps" list from the current audio sessions.</summary>

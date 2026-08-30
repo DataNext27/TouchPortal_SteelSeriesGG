@@ -68,4 +68,16 @@ internal static class TpMappings
 
     /// <summary>A chat mix balance (-1..1) as the 0-100 connector position.</summary>
     public static int ToTpBalanceConnector(double balance) => (int)Math.Round((Math.Clamp(balance, -1, 1) + 1) * 50);
+
+    /// <summary>
+    /// The fully-qualified connector key used both for connectorUpdate messages and
+    /// for the echo guard. Data values must match the entry.tp choices exactly.
+    /// </summary>
+    public static string ConnectorKey(string connectorId, string? channelDisplay = null, string? mixDisplay = null)
+    {
+        string key = connectorId;
+        if (channelDisplay is not null) key += $"|{TpIds.Data.Channel}={channelDisplay}";
+        if (mixDisplay is not null) key += $"|{TpIds.Data.Mix}={mixDisplay}";
+        return key;
+    }
 }

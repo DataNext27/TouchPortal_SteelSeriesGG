@@ -27,8 +27,9 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         _logger = loggerFactory.CreateLogger("Plugin");
         _client = TouchPortalFactory.CreateClient(this);
         _sonar = new SonarClient(loggerFactory.CreateLogger("SteelSeriesAPI"));
-        _publisher = new StatePublisher(_client, _sonar, loggerFactory.CreateLogger("StatePublisher"));
-        _actions = new ActionHandler(_client, _sonar, loggerFactory.CreateLogger("ActionHandler"));
+        var echoGuard = new ConnectorEchoGuard();
+        _publisher = new StatePublisher(_client, _sonar, echoGuard, loggerFactory.CreateLogger("StatePublisher"));
+        _actions = new ActionHandler(_client, _sonar, echoGuard, loggerFactory.CreateLogger("ActionHandler"));
     }
 
     /// <summary>Connects to Touch Portal, then starts the Sonar event stream.</summary>

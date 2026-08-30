@@ -20,6 +20,7 @@ public sealed class StatePublisher
     private readonly ITouchPortalClient _client;
     private readonly SonarClient _sonar;
     private readonly ILogger _logger;
+    private readonly ConnectorEchoGuard _echoGuard;
 
     private readonly object _gate = new();
     private readonly object _walkGate = new();
@@ -27,11 +28,19 @@ public sealed class StatePublisher
 
     private Mode _currentMode = Mode.Classic;
 
-    // deviceId -> (channel, any active app session, app names). Channel activity is the
-    // OR over its devices; channel apps are the distinct union over its devices.
-    private readonly Dictionary<string, (Channel Channel, bool Active, string[] Apps)> _deviceActivity = new();
+    // deviceId -> (channel, its app sessions). Channel activity is the OR over its
+    // devices' active sessions; channel apps are deduplicated across channels.
+    private readonly Dictionary<string, (Channel Channel, (string Name, bool Active)[] Sessions)> _deviceActivity = new();
     private readonly Dictionary<Channel, bool> _channelActivity = new();
     private readonly Dictionary<Channel, string> _channelApps = new();
+
+    // Last values sent to Touch Portal: identical re-publishes are skipped so mode
+    // switches and snapshots cost almost nothing when values did not change (flooding
+    // TP with no-op messages trips its E3081 detector).
+    private readonly Dictionary<string, string> _lastPublished = new();
+    private readonly Dictionary<string, int> _lastConnectorValue = new();
+
+    private int _volumeRefreshQueued;
 
     // Display customization pairs, keyed by setting name. Defaults are the normalized values.
     private sealed record TextPair(string On, string Off)
@@ -51,10 +60,11 @@ public sealed class StatePublisher
 
     private readonly Dictionary<string, TextPair> _texts = DefaultTexts();
 
-    public StatePublisher(ITouchPortalClient client, SonarClient sonar, ILogger logger)
+    public StatePublisher(ITouchPortalClient client, SonarClient sonar, ConnectorEchoGuard echoGuard, ILogger logger)
     {
         _client = client;
         _sonar = sonar;
+        _echoGuard = echoGuard;
         _logger = logger;
     }
 
@@ -119,6 +129,8 @@ public sealed class StatePublisher
     /// </summary>
     private void FireEvent(string triggerStateId, params string[] matchingValues)
     {
+        // Deliberately bypasses the Publish() dedup cache: the walk re-sends the same
+        // values on every occurrence ("Any" -> value -> "") and must never be skipped.
         lock (_walkGate)
         {
             _client.StateUpdate(triggerStateId, "Any");
@@ -212,10 +224,11 @@ public sealed class StatePublisher
             {
                 _deviceActivity.Clear();
                 foreach (DeviceRouting routing in routings.Where(r => r.Channel is not null))
-                    _deviceActivity[routing.DeviceId] = (routing.Channel!.Value, HasActiveAppSession(routing), AppNamesOf(routing));
+                    _deviceActivity[routing.DeviceId] = (routing.Channel!.Value, SessionsOf(routing));
             }
             foreach (Channel channel in new[] { Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic })
                 UpdateChannelActivity(channel, fireEvents: false);
+            RecomputeRoutedApps();
 
             _logger.LogInformation("All Touch Portal states refreshed");
         }
@@ -311,14 +324,16 @@ public sealed class StatePublisher
         Publish(TpIds.States.Volume(mixKey, channelKey), volume.ToString());
         Publish(TpIds.States.Mute(mixKey, channelKey), Texts(TpIds.Settings.MuteText).Of(setting.Muted));
 
-        // Move the matching slider(s). Connector id data values must match entry.tp choices.
-        string connectorId = mix is null
-            ? $"{TpIds.Connectors.VolumeClassic}|{TpIds.Data.Channel}={channel.Display()}"
-            : $"{TpIds.Connectors.VolumeStreamer}|{TpIds.Data.Channel}={channel.Display()}|{TpIds.Data.Mix}={mix.Display()}";
-        _client.ConnectorUpdate(connectorId, volume);
+        // Move the matching slider, unless Touch Portal itself is currently dragging it
+        // (echoing back during a drag floods TP - its E3081 detector fires).
+        string connectorKey = mix is null
+            ? TpMappings.ConnectorKey(TpIds.Connectors.VolumeClassic, channel.Display())
+            : TpMappings.ConnectorKey(TpIds.Connectors.VolumeStreamer, channel.Display(), mix.Display());
+        if (_echoGuard.ShouldEcho(connectorKey))
+            UpdateConnector(connectorKey, volume);
     }
 
-    private async void OnModeChanged(object? sender, ModeChange e)
+    private void OnModeChanged(object? sender, ModeChange e)
     {
         try
         {
@@ -328,13 +343,37 @@ public sealed class StatePublisher
 
             // Sonar's mode-switch snapshot races with the polling-based mode detection
             // (it can arrive while _currentMode is still the old mode and get filtered
-            // against the stale sections). Re-fetch the new mode's volumes explicitly.
-            await PublishVolumesForModeAsync(e.NewMode);
+            // against the stale sections). Re-fetch the new mode's volumes explicitly -
+            // debounced, so spamming the switch button collapses into one refresh of
+            // the final mode instead of a message flood (E3081).
+            QueueVolumeRefresh();
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Mode change handling failed");
         }
+    }
+
+    /// <summary>Debounced, single-flight volume refresh of the current mode.</summary>
+    private void QueueVolumeRefresh()
+    {
+        if (Interlocked.Exchange(ref _volumeRefreshQueued, 1) == 1) return;
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(300);
+            Interlocked.Exchange(ref _volumeRefreshQueued, 0);
+
+            Mode mode;
+            lock (_gate) mode = _currentMode;
+            try
+            {
+                await PublishVolumesForModeAsync(mode);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Volume refresh after mode change failed");
+            }
+        });
     }
 
     private void OnChatMixChanged(object? sender, ChatMixSetting e)
@@ -362,7 +401,8 @@ public sealed class StatePublisher
         bool enabled = string.Equals(chatMix.State, "enabled", StringComparison.OrdinalIgnoreCase);
         Publish(TpIds.States.ChatMixBalance, TpMappings.ToTpBalance(chatMix.Balance).ToString());
         Publish(TpIds.States.ChatMixState, Texts(TpIds.Settings.ChatMixStateText).Of(enabled));
-        _client.ConnectorUpdate(TpIds.Connectors.ChatMix, TpMappings.ToTpBalanceConnector(chatMix.Balance));
+        if (_echoGuard.ShouldEcho(TpIds.Connectors.ChatMix))
+            UpdateConnector(TpIds.Connectors.ChatMix, TpMappings.ToTpBalanceConnector(chatMix.Balance));
     }
 
     // ----------------------------------------------------------------
@@ -466,7 +506,7 @@ public sealed class StatePublisher
             if (routing.Channel is not { } channel) return;
 
             lock (_gate)
-                _deviceActivity[routing.DeviceId] = (channel, HasActiveAppSession(routing), AppNamesOf(routing));
+                _deviceActivity[routing.DeviceId] = (channel, SessionsOf(routing));
 
             var app = routing.Sessions.FirstOrDefault(s => !s.IsSystemSound && s.IsActive)
                       ?? routing.Sessions.FirstOrDefault(s => !s.IsSystemSound);
@@ -474,6 +514,7 @@ public sealed class StatePublisher
                 Publish(TpIds.States.LastAudioApp, app.DisplayName is { Length: > 0 } name ? name : app.ProcessName);
 
             UpdateChannelActivity(channel, fireEvents: true);
+            RecomputeRoutedApps();
         }
         catch (Exception ex)
         {
@@ -481,16 +522,47 @@ public sealed class StatePublisher
         }
     }
 
-    private static bool HasActiveAppSession(DeviceRouting routing) =>
-        routing.Sessions.Any(s => !s.IsSystemSound && s.IsActive);
-
-    private static string[] AppNamesOf(DeviceRouting routing) =>
+    private static (string Name, bool Active)[] SessionsOf(DeviceRouting routing) =>
         routing.Sessions
             .Where(s => !s.IsSystemSound)
-            .Select(s => s.DisplayName is { Length: > 0 } name ? name : s.ProcessName)
-            .Distinct()
-            .Order()
+            .Select(s => (Name: s.DisplayName is { Length: > 0 } name ? name : s.ProcessName, s.IsActive))
             .ToArray();
+
+    /// <summary>
+    /// Recomputes the "Routed Apps" state of every channel. Ghost sessions from past
+    /// routings are deduplicated: an app that is active somewhere is only listed where
+    /// it is active; its inactive leftovers on other channels are ignored.
+    /// </summary>
+    private void RecomputeRoutedApps()
+    {
+        var updates = new List<(Channel Channel, string Apps)>();
+        lock (_gate)
+        {
+            var activeSomewhere = _deviceActivity.Values
+                .SelectMany(d => d.Sessions.Where(s => s.Active).Select(s => s.Name))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (Channel channel in new[] { Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic })
+            {
+                string apps = string.Join(", ", _deviceActivity.Values
+                    .Where(d => d.Channel == channel)
+                    .SelectMany(d => d.Sessions)
+                    .Where(s => s.Active || !activeSomewhere.Contains(s.Name))
+                    .Select(s => s.Name)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .Order());
+
+                if (_channelApps.GetValueOrDefault(channel) != apps)
+                {
+                    _channelApps[channel] = apps;
+                    updates.Add((channel, apps));
+                }
+            }
+        }
+
+        foreach ((Channel channel, string apps) in updates)
+            Publish(TpIds.States.Apps(channel.Key()), apps);
+    }
 
     /// <summary>
     /// Recomputes a channel's activity (the OR over its devices), and publishes only
@@ -500,25 +572,12 @@ public sealed class StatePublisher
     {
         bool playing;
         bool changed;
-        string apps;
-        bool appsChanged;
         lock (_gate)
         {
-            playing = _deviceActivity.Values.Any(d => d.Channel == channel && d.Active);
+            playing = _deviceActivity.Values.Any(d => d.Channel == channel && d.Sessions.Any(s => s.Active));
             changed = !_channelActivity.TryGetValue(channel, out bool previous) || previous != playing;
             _channelActivity[channel] = playing;
-
-            apps = string.Join(", ", _deviceActivity.Values
-                .Where(d => d.Channel == channel)
-                .SelectMany(d => d.Apps)
-                .Distinct()
-                .Order());
-            appsChanged = _channelApps.GetValueOrDefault(channel) != apps;
-            _channelApps[channel] = apps;
         }
-
-        if (appsChanged)
-            Publish(TpIds.States.Apps(channel.Key()), apps);
 
         if (!changed && fireEvents) return;
 
@@ -532,5 +591,25 @@ public sealed class StatePublisher
     // Touch Portal primitives
     // ----------------------------------------------------------------
 
-    private void Publish(string stateId, string value) => _client.StateUpdate(stateId, value);
+    /// <summary>Sends a state update, skipping values identical to the last one sent.</summary>
+    private void Publish(string stateId, string value)
+    {
+        lock (_gate)
+        {
+            if (_lastPublished.TryGetValue(stateId, out string? last) && last == value) return;
+            _lastPublished[stateId] = value;
+        }
+        _client.StateUpdate(stateId, value);
+    }
+
+    /// <summary>Sends a connector update, skipping positions identical to the last one sent.</summary>
+    private void UpdateConnector(string connectorKey, int value)
+    {
+        lock (_gate)
+        {
+            if (_lastConnectorValue.TryGetValue(connectorKey, out int last) && last == value) return;
+            _lastConnectorValue[connectorKey] = value;
+        }
+        _client.ConnectorUpdate(connectorKey, value);
+    }
 }
