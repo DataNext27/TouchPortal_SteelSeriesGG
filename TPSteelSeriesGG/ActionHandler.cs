@@ -296,6 +296,24 @@ public sealed class ActionHandler
                     configs.Select(c => c.Name).Distinct().Order().ToArray(),
                     message.InstanceId);
             }
+            else if (message.ActionId == TpIds.Actions.SetClassicDevice && message.ListId == TpIds.Data.Channel &&
+                     TpMappings.ParseChannel(message.Value) is { } deviceChannel)
+            {
+                // Mic is a capture redirection; every other channel is a render one.
+                var devices = await _sonar.Devices.GetAllAsync(
+                    deviceChannel == Channel.Mic ? AudioDataFlow.Capture : AudioDataFlow.Render);
+                _client.ChoiceUpdate(TpIds.Data.Device,
+                    devices.Select(d => d.Name).Distinct().Order().ToArray(),
+                    message.InstanceId);
+            }
+            else if (message.ActionId == TpIds.Actions.SetStreamerDevice && message.ListId == TpIds.Data.Target)
+            {
+                // Both mixes are render targets.
+                var devices = await _sonar.Devices.GetAllAsync(AudioDataFlow.Render);
+                _client.ChoiceUpdate(TpIds.Data.Device,
+                    devices.Select(d => d.Name).Distinct().Order().ToArray(),
+                    message.InstanceId);
+            }
         }
         catch (Exception ex)
         {
