@@ -1029,6 +1029,41 @@
           "parentGroup": "Audio Activity"
         },
         {
+          "id": "tp_steelseries-gg_state_apps_game",
+          "type": "text",
+          "desc": "Game Routed Apps",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_apps_chat",
+          "type": "text",
+          "desc": "Chat Routed Apps",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_apps_media",
+          "type": "text",
+          "desc": "Media Routed Apps",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_apps_aux",
+          "type": "text",
+          "desc": "Aux Routed Apps",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_apps_mic",
+          "type": "text",
+          "desc": "Mic Routed Apps",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
           "id": "tp_steelseries-gg_state_last_audio_app",
           "type": "text",
           "desc": "Last Audio App",

@@ -27,9 +27,11 @@ public sealed class StatePublisher
 
     private Mode _currentMode = Mode.Classic;
 
-    // deviceId -> (channel, any active app session). Channel activity is the OR over its devices.
-    private readonly Dictionary<string, (Channel Channel, bool Active)> _deviceActivity = new();
+    // deviceId -> (channel, any active app session, app names). Channel activity is the
+    // OR over its devices; channel apps are the distinct union over its devices.
+    private readonly Dictionary<string, (Channel Channel, bool Active, string[] Apps)> _deviceActivity = new();
     private readonly Dictionary<Channel, bool> _channelActivity = new();
+    private readonly Dictionary<Channel, string> _channelApps = new();
 
     // Display customization pairs, keyed by setting name. Defaults are the normalized values.
     private sealed record TextPair(string On, string Off)
@@ -167,22 +169,7 @@ public sealed class StatePublisher
             lock (_gate) _currentMode = mode;
             Publish(TpIds.States.Mode, mode.ToString());
 
-            // Volumes and mutes: only the current mode's values are reliable (Sonar
-            // returns stale data for the other mode's sections).
-            Channel[] channels = [Channel.Master, Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic];
-            if (mode == Mode.Classic)
-            {
-                foreach (Channel channel in channels)
-                    PublishVolume(channel, null, await _sonar.VolumeSettings.GetAsync(channel));
-            }
-            else
-            {
-                foreach (Channel channel in channels)
-                {
-                    PublishVolume(channel, Mix.Personal, await _sonar.VolumeSettings.GetAsync(channel, Mix.Personal));
-                    PublishVolume(channel, Mix.Stream, await _sonar.VolumeSettings.GetAsync(channel, Mix.Stream));
-                }
-            }
+            await PublishVolumesForModeAsync(mode);
 
             // Chat mix
             ChatMixSetting chatMix = await _sonar.ChatMix.GetAsync();
@@ -225,7 +212,7 @@ public sealed class StatePublisher
             {
                 _deviceActivity.Clear();
                 foreach (DeviceRouting routing in routings.Where(r => r.Channel is not null))
-                    _deviceActivity[routing.DeviceId] = (routing.Channel!.Value, HasActiveAppSession(routing));
+                    _deviceActivity[routing.DeviceId] = (routing.Channel!.Value, HasActiveAppSession(routing), AppNamesOf(routing));
             }
             foreach (Channel channel in new[] { Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic })
                 UpdateChannelActivity(channel, fireEvents: false);
@@ -239,6 +226,29 @@ public sealed class StatePublisher
         finally
         {
             _refreshLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Fetches and publishes the volumes and mutes of one mode from the authoritative
+    /// HTTP route. Only the current mode's values are reliable (Sonar returns stale
+    /// data for the other mode's sections).
+    /// </summary>
+    private async Task PublishVolumesForModeAsync(Mode mode)
+    {
+        Channel[] channels = [Channel.Master, Channel.Game, Channel.Chat, Channel.Media, Channel.Aux, Channel.Mic];
+        if (mode == Mode.Classic)
+        {
+            foreach (Channel channel in channels)
+                PublishVolume(channel, null, await _sonar.VolumeSettings.GetAsync(channel));
+        }
+        else
+        {
+            foreach (Channel channel in channels)
+            {
+                PublishVolume(channel, Mix.Personal, await _sonar.VolumeSettings.GetAsync(channel, Mix.Personal));
+                PublishVolume(channel, Mix.Stream, await _sonar.VolumeSettings.GetAsync(channel, Mix.Stream));
+            }
         }
     }
 
@@ -308,14 +318,18 @@ public sealed class StatePublisher
         _client.ConnectorUpdate(connectorId, volume);
     }
 
-    private void OnModeChanged(object? sender, ModeChange e)
+    private async void OnModeChanged(object? sender, ModeChange e)
     {
         try
         {
             lock (_gate) _currentMode = e.NewMode;
             Publish(TpIds.States.Mode, e.NewMode.ToString());
             FireEvent(TpIds.Triggers.Mode, e.NewMode.ToString());
-            // The volume states of the new mode resync via the snapshot Sonar pushes on mode switches.
+
+            // Sonar's mode-switch snapshot races with the polling-based mode detection
+            // (it can arrive while _currentMode is still the old mode and get filtered
+            // against the stale sections). Re-fetch the new mode's volumes explicitly.
+            await PublishVolumesForModeAsync(e.NewMode);
         }
         catch (Exception ex)
         {
@@ -452,7 +466,7 @@ public sealed class StatePublisher
             if (routing.Channel is not { } channel) return;
 
             lock (_gate)
-                _deviceActivity[routing.DeviceId] = (channel, HasActiveAppSession(routing));
+                _deviceActivity[routing.DeviceId] = (channel, HasActiveAppSession(routing), AppNamesOf(routing));
 
             var app = routing.Sessions.FirstOrDefault(s => !s.IsSystemSound && s.IsActive)
                       ?? routing.Sessions.FirstOrDefault(s => !s.IsSystemSound);
@@ -470,6 +484,14 @@ public sealed class StatePublisher
     private static bool HasActiveAppSession(DeviceRouting routing) =>
         routing.Sessions.Any(s => !s.IsSystemSound && s.IsActive);
 
+    private static string[] AppNamesOf(DeviceRouting routing) =>
+        routing.Sessions
+            .Where(s => !s.IsSystemSound)
+            .Select(s => s.DisplayName is { Length: > 0 } name ? name : s.ProcessName)
+            .Distinct()
+            .Order()
+            .ToArray();
+
     /// <summary>
     /// Recomputes a channel's activity (the OR over its devices), and publishes only
     /// when the value actually changed, so ghost session updates never spam users.
@@ -478,12 +500,25 @@ public sealed class StatePublisher
     {
         bool playing;
         bool changed;
+        string apps;
+        bool appsChanged;
         lock (_gate)
         {
             playing = _deviceActivity.Values.Any(d => d.Channel == channel && d.Active);
             changed = !_channelActivity.TryGetValue(channel, out bool previous) || previous != playing;
             _channelActivity[channel] = playing;
+
+            apps = string.Join(", ", _deviceActivity.Values
+                .Where(d => d.Channel == channel)
+                .SelectMany(d => d.Apps)
+                .Distinct()
+                .Order());
+            appsChanged = _channelApps.GetValueOrDefault(channel) != apps;
+            _channelApps[channel] = apps;
         }
+
+        if (appsChanged)
+            Publish(TpIds.States.Apps(channel.Key()), apps);
 
         if (!changed && fireEvents) return;
 

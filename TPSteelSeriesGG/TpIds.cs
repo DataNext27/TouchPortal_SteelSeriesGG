@@ -134,6 +134,9 @@ public static class TpIds
 
         /// <summary>Audio activity state id. channelKey: game/chat/media/aux/mic.</summary>
         public static string Activity(string channelKey) => $"{P}state_activity_{channelKey}";
+
+        /// <summary>Routed apps list state id. channelKey: game/chat/media/aux/mic.</summary>
+        public static string Apps(string channelKey) => $"{P}state_apps_{channelKey}";
     }
 
     public static class Settings
@@ -224,6 +227,7 @@ public static class TpIds
             ids.Add(States.Mix(mix, channel));
 
         foreach (string channel in RoutedChannelKeys) ids.Add(States.Activity(channel));
+        foreach (string channel in RoutedChannelKeys) ids.Add(States.Apps(channel));
         ids.Add(States.LastAudioApp);
 
         ids.AddRange(AllTriggerStateIds);
