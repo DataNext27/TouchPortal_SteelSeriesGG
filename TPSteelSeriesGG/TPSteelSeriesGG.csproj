@@ -9,6 +9,7 @@
         <RootNamespace>TPSteelSeriesGG</RootNamespace>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <SelfContained>true</SelfContained>
+        <ApplicationIcon>..\icon-24.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,7 @@
 
     <ItemGroup>
         <Content Include="..\entry.tp" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="..\icon-24.ico" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>
