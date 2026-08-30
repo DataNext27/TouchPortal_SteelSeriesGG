@@ -26,6 +26,7 @@ public sealed class ActionHandler
     private bool _volumeFlushScheduled;
 
     private int _appListRefreshQueued;
+    private int _deviceListRefreshQueued;
 
     public ActionHandler(ITouchPortalClient client, SonarClient sonar, ConnectorEchoGuard echoGuard, ILogger logger)
     {
@@ -43,6 +44,9 @@ public sealed class ActionHandler
         // session events arrive in bursts, one refresh per burst is enough).
         _sonar.Events.AudioSessionOpened += (_, _) => QueueAppListRefresh();
         _sonar.Events.AudioSessionClosed += (_, _) => QueueAppListRefresh();
+        // Keep the device list fresh on hot-plug (debounced: one headset = several
+        // endpoints, so plugging one device fires several status events at once).
+        _sonar.Events.AudioDeviceStatusChanged += (_, _) => QueueDeviceListRefresh();
     }
 
     // ----------------------------------------------------------------
@@ -395,11 +399,7 @@ public sealed class ActionHandler
         {
             _logger.LogInformation("Refreshing dynamic choice lists ({Reason})", reason);
 
-            // Default device list: render devices, matching the actions' default targets
-            // (Game / Personal Mix). Picking Mic narrows to capture via the list update.
-            var devices = await _sonar.Devices.GetAllAsync(AudioDataFlow.Render);
-            _client.ChoiceUpdate(TpIds.Data.Device,
-                devices.Select(d => d.Name).Distinct().Order().ToArray());
+            await RefreshDeviceListAsync();
 
             var configs = await _sonar.Configs.GetAllAsync();
             _client.ChoiceUpdate(TpIds.Data.Config,
@@ -410,6 +410,34 @@ public sealed class ActionHandler
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Dynamic list refresh failed");
+        }
+    }
+
+    /// <summary>Debounces device list refreshes: one refresh per hot-plug burst.</summary>
+    private void QueueDeviceListRefresh()
+    {
+        if (Interlocked.Exchange(ref _deviceListRefreshQueued, 1) == 1) return;
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(500);
+            Interlocked.Exchange(ref _deviceListRefreshQueued, 0);
+            await RefreshDeviceListAsync();
+        });
+    }
+
+    /// <summary>Refreshes the default device list (render devices, the actions' default targets;
+    /// picking Mic or Streamer Mic narrows to capture via the list update).</summary>
+    private async Task RefreshDeviceListAsync()
+    {
+        try
+        {
+            var devices = await _sonar.Devices.GetAllAsync(AudioDataFlow.Render);
+            _client.ChoiceUpdate(TpIds.Data.Device,
+                devices.Select(d => d.Name).Distinct().Order().ToArray());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Device list refresh failed");
         }
     }
 
