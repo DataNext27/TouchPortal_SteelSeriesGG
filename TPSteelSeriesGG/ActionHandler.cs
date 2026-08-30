@@ -165,7 +165,31 @@ public sealed class ActionHandler
                         _logger.LogWarning("Could not identify the active window's process");
                         break;
                     }
-                    await _sonar.AppRouting.RouteAppAsync((int)pid, channel);
+
+                    // The window's PID is often NOT the audio session's PID (multi-process
+                    // browsers, launchers...): match the audio session by PID first, then
+                    // by process name, preferring active sessions.
+                    string? processName = null;
+                    try { processName = System.Diagnostics.Process.GetProcessById((int)pid).ProcessName; }
+                    catch { /* process may have exited */ }
+
+                    var routings = await _sonar.AppRouting.GetRoutingsAsync();
+                    var session = routings
+                        .SelectMany(r => r.Sessions)
+                        .Where(s => !s.IsSystemSound &&
+                                    (s.ProcessId == (int)pid ||
+                                     (processName is not null &&
+                                      string.Equals(s.ProcessName, processName, StringComparison.OrdinalIgnoreCase))))
+                        .OrderByDescending(s => s.ProcessId == (int)pid)
+                        .ThenByDescending(s => s.IsActive)
+                        .FirstOrDefault();
+                    if (session is null)
+                    {
+                        _logger.LogWarning("No audio session found for the active window (process '{Name}', pid {Pid})",
+                            processName ?? "?", pid);
+                        break;
+                    }
+                    await _sonar.AppRouting.RouteAppAsync(session.ProcessId, channel);
                     break;
                 }
 
