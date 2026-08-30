@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Steelseries-NET-API" Version="2.0.0-alpha.3" />
+        <PackageReference Include="Steelseries-NET-API" Version="2.0.0" />
         <PackageReference Include="TouchPortal-CS-API" Version="1.47.2" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
     </ItemGroup>
