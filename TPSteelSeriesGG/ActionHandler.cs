@@ -122,15 +122,19 @@ public sealed class ActionHandler
 
                 case TpIds.Actions.SetStreamerDevice:
                 {
-                    Mix? mix = message[TpIds.Data.Target] switch
-                    {
-                        "Personal Mix" => Mix.Personal,
-                        "Stream Mix" => Mix.Stream,
-                        _ => null,
-                    };
-                    if (mix is null) break;
                     if (await FindDeviceByNameAsync(message[TpIds.Data.Device]) is not { } device) break;
-                    await _sonar.Redirections.SetMixDeviceAsync(mix.Value, device.Id);
+                    switch (message[TpIds.Data.Target])
+                    {
+                        case "Personal Mix":
+                            await _sonar.Redirections.SetMixDeviceAsync(Mix.Personal, device.Id);
+                            break;
+                        case "Stream Mix":
+                            await _sonar.Redirections.SetMixDeviceAsync(Mix.Stream, device.Id);
+                            break;
+                        case "Streamer Mic":
+                            await _sonar.Redirections.SetMicDeviceAsync(device.Id);
+                            break;
+                    }
                     break;
                 }
 
@@ -370,8 +374,9 @@ public sealed class ActionHandler
             }
             else if (message.ActionId == TpIds.Actions.SetStreamerDevice && message.ListId == TpIds.Data.Target)
             {
-                // Both mixes are render targets.
-                var devices = await _sonar.Devices.GetAllAsync(AudioDataFlow.Render);
+                // The mixes are render targets; the mic passthrough is a capture one.
+                var devices = await _sonar.Devices.GetAllAsync(
+                    message.Value == "Streamer Mic" ? AudioDataFlow.Capture : AudioDataFlow.Render);
                 _client.ChoiceUpdate(TpIds.Data.Device,
                     devices.Select(d => d.Name).Distinct().Order().ToArray(),
                     message.InstanceId);

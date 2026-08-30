@@ -9,7 +9,7 @@
     "parentCategory": "audio"
   },
   "plugin_start_cmd": "%TP_PLUGIN_FOLDER%TPSteelSeriesGG/TPSteelSeriesGG.exe",
-  "settingsDescription": "Display customization: each 'Text' setting takes two values separated by a comma, '<On text>,<Off text>' (e.g. 'MUTED,LIVE'). They only change how states are displayed on your buttons.",
+  "settingsDescription": "Display customization: each 'Text' setting takes two values separated by a comma, '<On text>,<Off text>' (e.g. 'MUTED,LIVE'). They only change how states are displayed on your buttons; actions and events keep the standard values.",
   "settings": [
     {
       "name": "Mute States Text",
@@ -314,7 +314,8 @@
               "default": "Personal Mix",
               "valueChoices": [
                 "Personal Mix",
-                "Stream Mix"
+                "Stream Mix",
+                "Streamer Mic"
               ]
             },
             {

@@ -80,6 +80,7 @@ public sealed class StatePublisher
         _sonar.Events.ConfigSelectionChanged += OnConfigChanged;
         _sonar.Events.ClassicDeviceChanged += OnClassicDeviceChanged;
         _sonar.Events.MixDeviceChanged += OnMixDeviceChanged;
+        _sonar.Events.MicDeviceChanged += OnMicDeviceChanged;
         _sonar.Events.MixChannelToggled += OnMixToggled;
         _sonar.Events.StreamMonitoringChanged += OnMonitoringChanged;
         _sonar.Events.AudioSessionOpened += OnAudioSession;
@@ -448,6 +449,20 @@ public sealed class StatePublisher
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Mix device change handling failed");
+        }
+    }
+
+    private async void OnMicDeviceChanged(object? sender, MicDeviceChange e)
+    {
+        try
+        {
+            string name = await ResolveDeviceNameAsync(e.NewDeviceId);
+            Publish(TpIds.States.DeviceStreamerMic, name);
+            FireEvent(TpIds.Triggers.Device, "Streamer Mic");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Mic device change handling failed");
         }
     }
 
