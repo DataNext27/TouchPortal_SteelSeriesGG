@@ -33,8 +33,6 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
 4. Restart Touch Portal
 5. Now start setting up buttons or sliders
 
-Note: the plugin doesn't ask for admin rights anymore, and doesn't need Npcap or any network trick. It talks to Sonar the same way the SteelSeries GG window does.
-
 ## Plugin Capabilities
 ### Actions
 - Switch mode (Classic ↔ Streamer)
@@ -95,6 +93,8 @@ All settings customize how states are displayed in your button texts. Each takes
     - Default: Playing,Silent
 - Connection Text
     - Default: Connected,Disconnected
+
+Note: events always compare against the default (internal) values, so changing these settings never breaks your existing events.
 
 ## Changelog
 ```
