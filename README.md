@@ -26,9 +26,9 @@ This plugin allows you to control SteelSeries GG Sonar with Touch Portal<br>
 1. Download the [latest version](https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest) of the plugin
     - No need to install .NET anymore, everything is included in the plugin
 2. Open Touch Portal
-    - Click the quick actions button
-    - Click import plugin
-    - Find the plugin file you've just downloaded and open it
+   - Click the Quick Actions button
+   - Click import plugin
+   - Find the plugin file you've just downloaded and open it
 3. Wait a bit till it finish loading
 4. Restart Touch Portal
 5. Now start setting up buttons or sliders
