@@ -100,17 +100,50 @@ public class EntryTpContractTests
     }
 
     [Fact]
-    public void Events_AreTriggerEventStyle_WithLocalStates()
+    public void Events_FollowTheTwoRegimeRule()
     {
+        // An event either has a dimension (dropdown: points to a declared trigger state,
+        // offers "Any" first) or is parameterless (triggerEvent-fired: empty valueStateId,
+        // no choices). Anything else is a manifest bug.
+        var triggers = TpIds.AllTriggerStateIds.ToHashSet();
+        var referenced = new HashSet<string>();
+
         foreach (var evt in Category.GetProperty("events").EnumerateArray())
         {
             string id = evt.GetProperty("id").GetString()!;
+            string stateId = evt.GetProperty("valueStateId").GetString()!;
+            var choices = evt.GetProperty("valueChoices").EnumerateArray()
+                .Select(c => c.GetString()!)
+                .ToList();
 
-            // triggerEvent-driven events must not offer a value filter (it would be ignored and mislead users)
-            Assert.True(evt.GetProperty("valueStateId").GetString() == "",
-                $"Event {id} references a valueStateId: our events are triggerEvent-driven and must not");
-            Assert.True(evt.GetProperty("localstates").GetArrayLength() > 0,
-                $"Event {id} declares no local states: it would carry no data");
+            if (stateId == "")
+            {
+                Assert.True(choices.Count == 0,
+                    $"Parameterless event {id} must not declare choices (found {choices.Count})");
+                continue;
+            }
+
+            Assert.True(triggers.Contains(stateId),
+                $"Event {id} points to '{stateId}', which is not a declared trigger state");
+            Assert.True(choices.Count >= 2 && choices[0] == "Any",
+                $"Dropdown event {id} must offer 'Any' first plus at least one specific choice");
+            Assert.Equal(choices.Count, choices.ToHashSet().Count);
+            referenced.Add(stateId);
+        }
+
+        Assert.True(referenced.SetEquals(triggers),
+            $"Unreferenced trigger states: {string.Join(", ", triggers.Except(referenced))}");
+    }
+
+    [Fact]
+    public void TriggerStates_AreQuarantinedInTheInternalGroup()
+    {
+        var triggers = TpIds.AllTriggerStateIds.ToHashSet();
+        foreach (var state in Category.GetProperty("states").EnumerateArray())
+        {
+            if (!triggers.Contains(state.GetProperty("id").GetString()!)) continue;
+            Assert.Equal("Internal (event triggers)", state.GetProperty("parentGroup").GetString());
+            Assert.Equal("", state.GetProperty("default").GetString());
         }
     }
 

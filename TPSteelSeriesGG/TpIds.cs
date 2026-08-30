@@ -61,36 +61,48 @@ public static class TpIds
     public static class Events
     {
         public const string VolumeChanged = P + "event_volume_changed";
-        public const string MuteChanged = P + "event_mute_changed";
+        public const string ChannelMuted = P + "event_channel_muted";
+        public const string ChannelUnmuted = P + "event_channel_unmuted";
         public const string ModeChanged = P + "event_mode_changed";
         public const string ChatMixChanged = P + "event_chatmix_changed";
         public const string ConfigChanged = P + "event_config_changed";
         public const string DeviceChanged = P + "event_device_changed";
-        public const string MixToggled = P + "event_mix_toggled";
+        public const string MixChannelEnabled = P + "event_mix_channel_enabled";
+        public const string MixChannelDisabled = P + "event_mix_channel_disabled";
+        public const string ActivityStarted = P + "event_activity_started";
+        public const string ActivityStopped = P + "event_activity_stopped";
         public const string MonitoringChanged = P + "event_monitoring_changed";
-        public const string ActivityChanged = P + "event_activity_changed";
         public const string ConnectionChanged = P + "event_connection_changed";
     }
 
-    /// <summary>Local state ids sent along triggerEvent messages.</summary>
+    /// <summary>
+    /// Local state ids carried by the triggerEvent-fired events (ChatMix).
+    /// Dropdown events cannot carry local states.
+    /// </summary>
     public static class EventStates
     {
-        public const string Channel = "channel";
-        public const string Mix = "mix";
-        public const string Volume = "volume";
-        public const string Muted = "muted";
-        public const string PreviousMode = "previous_mode";
-        public const string NewMode = "new_mode";
         public const string Balance = "balance";
         public const string State = "state";
-        public const string PreviousConfig = "previous_config";
-        public const string Config = "config";
-        public const string Target = "target";
-        public const string Device = "device";
-        public const string Enabled = "enabled";
-        public const string Activity = "activity";
-        public const string App = "app";
-        public const string Connected = "connected";
+    }
+
+    /// <summary>
+    /// Event trigger helper states: the event walker writes matching choice values
+    /// through them to fire the dropdown events. Internal, never displayed.
+    /// </summary>
+    public static class Triggers
+    {
+        public const string Volume = P + "state_trigger_volume";
+        public const string Muted = P + "state_trigger_muted";
+        public const string Unmuted = P + "state_trigger_unmuted";
+        public const string Mode = P + "state_trigger_mode";
+        public const string Config = P + "state_trigger_config";
+        public const string Device = P + "state_trigger_device";
+        public const string MixEnabled = P + "state_trigger_mix_enabled";
+        public const string MixDisabled = P + "state_trigger_mix_disabled";
+        public const string ActivityStarted = P + "state_trigger_activity_started";
+        public const string ActivityStopped = P + "state_trigger_activity_stopped";
+        public const string Monitoring = P + "state_trigger_monitoring";
+        public const string Connection = P + "state_trigger_connection";
     }
 
     public static class States
@@ -103,6 +115,7 @@ public static class TpIds
         public const string DevicePersonalMix = P + "state_device_personal_mix";
         public const string DeviceStreamMix = P + "state_device_stream_mix";
         public const string DeviceStreamerMic = P + "state_device_streamer_mic";
+        public const string LastAudioApp = P + "state_last_audio_app";
 
         /// <summary>Volume state id. mixKey: classic/personal/stream; channelKey: master..mic.</summary>
         public static string Volume(string mixKey, string channelKey) => $"{P}state_volume_{mixKey}_{channelKey}";
@@ -133,6 +146,14 @@ public static class TpIds
         public const string ConnectionText = "Connection Text";
     }
 
+    /// <summary>Every event trigger helper state id.</summary>
+    public static IReadOnlyList<string> AllTriggerStateIds { get; } =
+    [
+        Triggers.Volume, Triggers.Muted, Triggers.Unmuted, Triggers.Mode,
+        Triggers.Config, Triggers.Device, Triggers.MixEnabled, Triggers.MixDisabled,
+        Triggers.ActivityStarted, Triggers.ActivityStopped, Triggers.Monitoring, Triggers.Connection,
+    ];
+
     /// <summary>Every state id the plugin publishes. The contract test checks this equals entry.tp exactly.</summary>
     public static IReadOnlyList<string> AllStateIds { get; } = BuildAllStateIds();
 
@@ -147,9 +168,10 @@ public static class TpIds
     /// <summary>Every event id. Contract-tested against entry.tp.</summary>
     public static IReadOnlyList<string> AllEventIds { get; } =
     [
-        Events.VolumeChanged, Events.MuteChanged, Events.ModeChanged, Events.ChatMixChanged,
-        Events.ConfigChanged, Events.DeviceChanged, Events.MixToggled, Events.MonitoringChanged,
-        Events.ActivityChanged, Events.ConnectionChanged,
+        Events.VolumeChanged, Events.ChannelMuted, Events.ChannelUnmuted, Events.ModeChanged,
+        Events.ChatMixChanged, Events.ConfigChanged, Events.DeviceChanged, Events.MixChannelEnabled,
+        Events.MixChannelDisabled, Events.ActivityStarted, Events.ActivityStopped,
+        Events.MonitoringChanged, Events.ConnectionChanged,
     ];
 
     /// <summary>Every connector id. Contract-tested against entry.tp.</summary>
@@ -202,6 +224,9 @@ public static class TpIds
             ids.Add(States.Mix(mix, channel));
 
         foreach (string channel in RoutedChannelKeys) ids.Add(States.Activity(channel));
+        ids.Add(States.LastAudioApp);
+
+        ids.AddRange(AllTriggerStateIds);
 
         return ids;
     }

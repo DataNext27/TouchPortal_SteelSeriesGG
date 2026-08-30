@@ -114,7 +114,6 @@
         {
           "id": "tp_steelseries-gg_set_classic_mute",
           "name": "Mute/Unmute (Classic)",
-          "subCategoryId": "tp_steelseries-gg_sonar.classic",
           "type": "communicate",
           "lines": {
             "action": [
@@ -154,12 +153,12 @@
                 "Mic"
               ]
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.classic"
         },
         {
           "id": "tp_steelseries-gg_set_streamer_mute",
           "name": "Mute/Unmute (Streamer)",
-          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
           "type": "communicate",
           "lines": {
             "action": [
@@ -209,7 +208,8 @@
                 "Stream"
               ]
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         },
         {
           "id": "tp_steelseries-gg_set_config",
@@ -253,7 +253,6 @@
         {
           "id": "tp_steelseries-gg_set_classic_device",
           "name": "Set device (Classic)",
-          "subCategoryId": "tp_steelseries-gg_sonar.classic",
           "type": "communicate",
           "lines": {
             "action": [
@@ -288,12 +287,12 @@
               "default": "",
               "valueChoices": []
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.classic"
         },
         {
           "id": "tp_steelseries-gg_set_streamer_device",
           "name": "Set device (Streamer)",
-          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
           "type": "communicate",
           "lines": {
             "action": [
@@ -315,8 +314,7 @@
               "default": "Personal Mix",
               "valueChoices": [
                 "Personal Mix",
-                "Stream Mix",
-                "Streamer Mic"
+                "Stream Mix"
               ]
             },
             {
@@ -326,12 +324,12 @@
               "default": "",
               "valueChoices": []
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         },
         {
           "id": "tp_steelseries-gg_set_mix",
           "name": "Toggle channel on mix",
-          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
           "type": "communicate",
           "lines": {
             "action": [
@@ -380,12 +378,12 @@
                 "Stream"
               ]
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         },
         {
           "id": "tp_steelseries-gg_set_audience_monitoring",
           "name": "Toggle audience monitoring",
-          "subCategoryId": "tp_steelseries-gg_sonar.streamer",
           "type": "communicate",
           "lines": {
             "action": [
@@ -411,7 +409,8 @@
                 "Disable"
               ]
             }
-          ]
+          ],
+          "subCategoryId": "tp_steelseries-gg_sonar.streamer"
         },
         {
           "id": "tp_steelseries-gg_route_active_window",
@@ -1028,77 +1027,199 @@
           "desc": "Mic Audio Activity",
           "default": "Silent",
           "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_last_audio_app",
+          "type": "text",
+          "desc": "Last Audio App",
+          "default": "",
+          "parentGroup": "Audio Activity"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_volume",
+          "type": "text",
+          "desc": "[internal] volume event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_muted",
+          "type": "text",
+          "desc": "[internal] muted event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_unmuted",
+          "type": "text",
+          "desc": "[internal] unmuted event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_mode",
+          "type": "text",
+          "desc": "[internal] mode event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_config",
+          "type": "text",
+          "desc": "[internal] config event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_device",
+          "type": "text",
+          "desc": "[internal] device event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_mix_enabled",
+          "type": "text",
+          "desc": "[internal] mix_enabled event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_mix_disabled",
+          "type": "text",
+          "desc": "[internal] mix_disabled event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_activity_started",
+          "type": "text",
+          "desc": "[internal] activity_started event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_activity_stopped",
+          "type": "text",
+          "desc": "[internal] activity_stopped event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_monitoring",
+          "type": "text",
+          "desc": "[internal] monitoring event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
+        },
+        {
+          "id": "tp_steelseries-gg_state_trigger_connection",
+          "type": "text",
+          "desc": "[internal] connection event trigger - do not use",
+          "default": "",
+          "parentGroup": "Internal (event triggers)"
         }
       ],
       "events": [
         {
           "id": "tp_steelseries-gg_event_volume_changed",
           "name": "On volume changed",
-          "format": "When a Sonar volume changes",
+          "format": "When $val volume changes",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "channel",
-              "name": "Channel"
-            },
-            {
-              "id": "mix",
-              "name": "Mix (Classic/Personal/Stream)"
-            },
-            {
-              "id": "volume",
-              "name": "Volume (0-100)"
-            },
-            {
-              "id": "muted",
-              "name": "Muted (muted/unmuted)"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Master (Classic)",
+            "Master (Personal)",
+            "Master (Stream)",
+            "Game (Classic)",
+            "Game (Personal)",
+            "Game (Stream)",
+            "Chat (Classic)",
+            "Chat (Personal)",
+            "Chat (Stream)",
+            "Media (Classic)",
+            "Media (Personal)",
+            "Media (Stream)",
+            "Aux (Classic)",
+            "Aux (Personal)",
+            "Aux (Stream)",
+            "Mic (Classic)",
+            "Mic (Personal)",
+            "Mic (Stream)"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_volume"
         },
         {
-          "id": "tp_steelseries-gg_event_mute_changed",
-          "name": "On mute changed",
-          "format": "When a Sonar mute state changes",
+          "id": "tp_steelseries-gg_event_channel_muted",
+          "name": "On channel muted",
+          "format": "When $val is muted",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "channel",
-              "name": "Channel"
-            },
-            {
-              "id": "mix",
-              "name": "Mix (Classic/Personal/Stream)"
-            },
-            {
-              "id": "muted",
-              "name": "Muted (muted/unmuted)"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Master (Classic)",
+            "Master (Personal)",
+            "Master (Stream)",
+            "Game (Classic)",
+            "Game (Personal)",
+            "Game (Stream)",
+            "Chat (Classic)",
+            "Chat (Personal)",
+            "Chat (Stream)",
+            "Media (Classic)",
+            "Media (Personal)",
+            "Media (Stream)",
+            "Aux (Classic)",
+            "Aux (Personal)",
+            "Aux (Stream)",
+            "Mic (Classic)",
+            "Mic (Personal)",
+            "Mic (Stream)"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_muted"
+        },
+        {
+          "id": "tp_steelseries-gg_event_channel_unmuted",
+          "name": "On channel unmuted",
+          "format": "When $val is unmuted",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Any",
+            "Master (Classic)",
+            "Master (Personal)",
+            "Master (Stream)",
+            "Game (Classic)",
+            "Game (Personal)",
+            "Game (Stream)",
+            "Chat (Classic)",
+            "Chat (Personal)",
+            "Chat (Stream)",
+            "Media (Classic)",
+            "Media (Personal)",
+            "Media (Stream)",
+            "Aux (Classic)",
+            "Aux (Personal)",
+            "Aux (Stream)",
+            "Mic (Classic)",
+            "Mic (Personal)",
+            "Mic (Stream)"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_unmuted"
         },
         {
           "id": "tp_steelseries-gg_event_mode_changed",
           "name": "On mode changed",
-          "format": "When the Sonar mode changes",
+          "format": "When Sonar mode changes to $val",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "previous_mode",
-              "name": "Previous mode"
-            },
-            {
-              "id": "new_mode",
-              "name": "New mode"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Classic",
+            "Streamer"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_mode"
         },
         {
           "id": "tp_steelseries-gg_event_chatmix_changed",
@@ -1115,127 +1236,144 @@
             },
             {
               "id": "state",
-              "name": "State (enabled/disabled)"
+              "name": "State (Enabled/Disabled)"
             }
           ]
         },
         {
           "id": "tp_steelseries-gg_event_config_changed",
           "name": "On config changed",
-          "format": "When a channel config changes",
+          "format": "When the $val config changes",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "channel",
-              "name": "Channel"
-            },
-            {
-              "id": "previous_config",
-              "name": "Previous config"
-            },
-            {
-              "id": "config",
-              "name": "New config"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_config"
         },
         {
           "id": "tp_steelseries-gg_event_device_changed",
           "name": "On device changed",
-          "format": "When a redirection device changes",
+          "format": "When the $val device changes",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "target",
-              "name": "Target (channel or mix)"
-            },
-            {
-              "id": "device",
-              "name": "New device"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic",
+            "Personal Mix",
+            "Stream Mix",
+            "Streamer Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_device"
         },
         {
-          "id": "tp_steelseries-gg_event_mix_toggled",
-          "name": "On mix toggled",
-          "format": "When a channel is toggled on a mix",
+          "id": "tp_steelseries-gg_event_mix_channel_enabled",
+          "name": "On channel enabled on mix",
+          "format": "When $val is enabled",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "mix",
-              "name": "Mix (Personal/Stream)"
-            },
-            {
-              "id": "channel",
-              "name": "Channel"
-            },
-            {
-              "id": "enabled",
-              "name": "Enabled (on/off)"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Game (Personal)",
+            "Game (Stream)",
+            "Chat (Personal)",
+            "Chat (Stream)",
+            "Media (Personal)",
+            "Media (Stream)",
+            "Aux (Personal)",
+            "Aux (Stream)",
+            "Mic (Personal)",
+            "Mic (Stream)"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_mix_enabled"
+        },
+        {
+          "id": "tp_steelseries-gg_event_mix_channel_disabled",
+          "name": "On channel disabled on mix",
+          "format": "When $val is disabled",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Any",
+            "Game (Personal)",
+            "Game (Stream)",
+            "Chat (Personal)",
+            "Chat (Stream)",
+            "Media (Personal)",
+            "Media (Stream)",
+            "Aux (Personal)",
+            "Aux (Stream)",
+            "Mic (Personal)",
+            "Mic (Stream)"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_mix_disabled"
+        },
+        {
+          "id": "tp_steelseries-gg_event_activity_started",
+          "name": "On audio started playing",
+          "format": "When audio starts playing on $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Any",
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_activity_started"
+        },
+        {
+          "id": "tp_steelseries-gg_event_activity_stopped",
+          "name": "On audio stopped playing",
+          "format": "When audio stops playing on $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "Any",
+            "Game",
+            "Chat",
+            "Media",
+            "Aux",
+            "Mic"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_activity_stopped"
         },
         {
           "id": "tp_steelseries-gg_event_monitoring_changed",
           "name": "On audience monitoring changed",
-          "format": "When audience monitoring is toggled",
+          "format": "When audience monitoring is turned $val",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "enabled",
-              "name": "Enabled (on/off)"
-            }
-          ]
-        },
-        {
-          "id": "tp_steelseries-gg_event_activity_changed",
-          "name": "On audio activity changed",
-          "format": "When audio starts or stops playing on a channel",
-          "type": "communicate",
-          "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "channel",
-              "name": "Channel"
-            },
-            {
-              "id": "activity",
-              "name": "Activity (playing/silent)"
-            },
-            {
-              "id": "app",
-              "name": "Application name"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "On",
+            "Off"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_monitoring"
         },
         {
           "id": "tp_steelseries-gg_event_connection_changed",
           "name": "On connection changed",
-          "format": "When the connection to Sonar changes",
+          "format": "When Sonar becomes $val",
           "type": "communicate",
           "valueType": "choice",
-          "valueChoices": [],
-          "valueStateId": "",
-          "localstates": [
-            {
-              "id": "connected",
-              "name": "Connected (connected/disconnected)"
-            }
-          ]
+          "valueChoices": [
+            "Any",
+            "Connected",
+            "Disconnected"
+          ],
+          "valueStateId": "tp_steelseries-gg_state_trigger_connection"
         }
       ]
     }

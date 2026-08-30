@@ -18,6 +18,7 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     private readonly ILogger _logger;
     private readonly ITouchPortalClient _client;
     private readonly SonarClient _sonar;
+    private readonly StatePublisher _publisher;
     private readonly ManualResetEventSlim _shutdown = new(false);
 
     public SteelSeriesPlugin(ILoggerFactory loggerFactory)
@@ -25,6 +26,7 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         _logger = loggerFactory.CreateLogger("Plugin");
         _client = TouchPortalFactory.CreateClient(this);
         _sonar = new SonarClient(loggerFactory.CreateLogger("SteelSeriesAPI"));
+        _publisher = new StatePublisher(_client, _sonar, loggerFactory.CreateLogger("StatePublisher"));
     }
 
     /// <summary>Connects to Touch Portal, then starts the Sonar event stream.</summary>
@@ -40,9 +42,9 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         _logger.LogInformation("Connected to Touch Portal");
 
         // Sonar side: the listener owns discovery, reconnection, and GG liveness.
-        // If GG is not running yet, the listener will simply connect when it appears.
-        _sonar.Events.Connected += (_, _) => _logger.LogInformation("Connected to Sonar");
-        _sonar.Events.Disconnected += (_, _) => _logger.LogWarning("Disconnected from Sonar (GG closed? retrying...)");
+        // If GG is not running yet, the listener will simply connect when it appears,
+        // and the publisher's Connected handler will do the initial full state push.
+        _publisher.Attach();
         _sonar.Events.PollingInterval = TimeSpan.FromMilliseconds(500);
         _sonar.Events.Start();
     }
@@ -50,7 +52,22 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     /// <summary>Blocks until Touch Portal closes the plugin.</summary>
     public void WaitForShutdown() => _shutdown.Wait();
 
-    // ---- Touch Portal message handlers (filled in step by step) ----
+    // ---- Touch Portal message handlers ----
+
+    /// <inheritdoc />
+    public void OnInfoEvent(InfoEvent message)
+    {
+        _logger.LogInformation("Touch Portal info: SDK {Sdk}, TP {Version}", message.SdkVersion, message.TpVersionString);
+        // The pairing message carries the initial settings values.
+        _publisher.ApplySettings(message.Settings);
+    }
+
+    /// <inheritdoc />
+    public void OnSettingsEvent(SettingsEvent message)
+    {
+        _logger.LogInformation("Plugin settings changed");
+        _publisher.ApplySettings(message.Values);
+    }
 
     /// <inheritdoc />
     public void OnClosedEvent(string message)
@@ -70,14 +87,6 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     /// <inheritdoc />
     public void OnListChangedEvent(ListChangeEvent message) =>
         _logger.LogDebug("List changed: {ListId}", message.ListId);
-
-    /// <inheritdoc />
-    public void OnSettingsEvent(SettingsEvent message) =>
-        _logger.LogDebug("Settings received");
-
-    /// <inheritdoc />
-    public void OnInfoEvent(InfoEvent message) =>
-        _logger.LogInformation("Touch Portal info: SDK {Sdk}, TP {Version}", message.SdkVersion, message.TpVersionString);
 
     /// <inheritdoc />
     public void OnBroadcastEvent(BroadcastEvent message) { }
