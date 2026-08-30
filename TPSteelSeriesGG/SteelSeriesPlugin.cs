@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using SteelSeriesAPI.Sonar;
+using System.Diagnostics;
 using TouchPortalSDK;
 using TouchPortalSDK.Interfaces;
 using TouchPortalSDK.Messages.Events;
+using TouchPortalSDK.Messages.Models;
 
 namespace TPSteelSeriesGG;
 
@@ -21,6 +23,9 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     private readonly StatePublisher _publisher;
     private readonly ActionHandler _actions;
     private readonly ManualResetEventSlim _shutdown = new(false);
+    private readonly UpdateChecker _updateChecker;
+    private int _updateCheckDone;
+    private volatile string? _latestReleaseUrl;
 
     public SteelSeriesPlugin(ILoggerFactory loggerFactory)
     {
@@ -30,6 +35,7 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         var echoGuard = new ConnectorEchoGuard();
         _publisher = new StatePublisher(_client, _sonar, echoGuard, loggerFactory.CreateLogger("StatePublisher"));
         _actions = new ActionHandler(_client, _sonar, echoGuard, loggerFactory.CreateLogger("ActionHandler"));
+        _updateChecker = new UpdateChecker(loggerFactory.CreateLogger("UpdateChecker"));
     }
 
     /// <summary>Connects to Touch Portal, then starts the Sonar event stream.</summary>
@@ -64,6 +70,25 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
         _logger.LogInformation("Touch Portal info: SDK {Sdk}, TP {Version}", message.SdkVersion, message.TpVersionString);
         // The pairing message carries the initial settings values.
         _publisher.ApplySettings(message.Settings);
+
+        // One version check per plugin run, off the handler thread. Silent on failure.
+        if (Interlocked.Exchange(ref _updateCheckDone, 1) == 0)
+            _ = NotifyIfUpdateAvailableAsync();
+    }
+
+    /// <summary>Notifies through Touch Portal when a newer plugin release exists.</summary>
+    private async Task NotifyIfUpdateAvailableAsync()
+    {
+        var update = await _updateChecker.CheckAsync();
+        if (update is null) return;
+
+        _latestReleaseUrl = update.Url;
+        _client.ShowNotification(
+            TpIds.Notifications.UpdateAvailable,
+            $"SteelSeries GG plugin {update.TagName} is available",
+            $"You are running version {UpdateChecker.CurrentVersion}.\n" +
+            "Click below to open the download page.",
+            [new NotificationOptions { Id = TpIds.Notifications.GoToDownloadOption, Title = "Go to download page" }]);
     }
 
     /// <inheritdoc />
@@ -96,7 +121,20 @@ public sealed class SteelSeriesPlugin : ITouchPortalEventHandler, IDisposable
     public void OnBroadcastEvent(BroadcastEvent message) { }
 
     /// <inheritdoc />
-    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message) { }
+    public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
+    {
+        if (message.OptionId != TpIds.Notifications.GoToDownloadOption) return;
+        string url = _latestReleaseUrl ?? "https://github.com/DataNext27/TouchPortal_SteelSeriesGG/releases/latest";
+        try
+        {
+            // UseShellExecute hands the URL to the default browser.
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not open the release page");
+        }
+    }
 
     /// <inheritdoc />
     public void OnShortConnectorIdNotificationEvent(ShortConnectorIdNotificationEvent message) { }

@@ -38,6 +38,13 @@ public static class TpIds
         public const string RouteApp = P + "route_app";
     }
 
+    /// <summary>Notification ids (runtime-only: notifications are not declared in entry.tp).</summary>
+    public static class Notifications
+    {
+        public const string UpdateAvailable = P + "notification_update_available";
+        public const string GoToDownloadOption = P + "notification_update_download";
+    }
+
     /// <summary>Data field ids used inside actions and connectors.</summary>
     public static class Data
     {
